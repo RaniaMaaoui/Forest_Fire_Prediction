@@ -1,0 +1,150 @@
+{% extends 'base2.html' %}
+
+
+{% block content %}
+    <!-- Content Start -->
+    <div class="content">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+            <a href="#" class="sidebar-toggler flex-shrink-0">
+                <i class="fa fa-bars"></i>
+            </a>
+            <div class="navbar-nav align-items-center ms-auto">
+
+                <div class="nav-item dropdown">
+                    <a href="{% url 'supervisor:dashboard_super' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa fa-bell me-lg-2"></i>
+                        <span class="d-none d-lg-inline-flex">Notificatin</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item text-center">See all notifications</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Navbar End -->
+
+
+        <!-- Blank Start -->
+        <div class="container-fluid pt-4 px-4">
+
+            <!-- Add Project Button Start -->
+            <div class="text-end mb-3">
+                <button class="btn btn-primary" id="addProjectBtn">+ Add Project</button>
+            </div>
+            <!-- Add Project Button End -->
+
+            <!-- Project Form Modal Start (Initially Hidden) -->
+            <div class="modal" id="projectFormModal" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="projectFormModalLabel">Add Project</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="projectFormContent">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Project Name -->
+                                        <div class="form-group">
+                                            <label for="projectName">Project Name</label>
+                                            <input type="text" class="form-control" id="projectName" name="projectName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- Region Name -->
+                                        <div class="form-group">
+                                            <label for="regionName">Region Name</label>
+                                            <input type="text" class="form-control" id="regionName" name="regionName" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Start Date -->
+                                        <div class="form-group">
+                                            <label for="startDate">Start Date</label>
+                                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- End Date -->
+                                        <div class="form-group">
+                                            <label for="endDate">End Date</label>
+                                            <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Choose An Existing Client -->
+                                        <div class="form-group">
+                                            <label for="existingClient">Choose An Existing Client</label>
+                                            <select class="form-select" id="existingClient" name="existingClient">
+                                                <!-- Populate options as needed -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- Contract (choose file) -->
+                                        <div class="form-group">
+                                            <label for="contractFile">Contract (choose file)</label>
+                                            <input type="file" class="form-control-file" id="contractFile" name="contractFile">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Project Description -->
+                                <div class="form-group">
+                                    <label for="projectDescription">Project Description</label>
+                                    <textarea class="form-control" id="projectDescription" name="projectDescription" rows="3" required></textarea>
+                                </div>
+                                <!-- Submit Button -->
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Project Form Modal End -->
+            
+
+            
+
+        </div>
+        <!-- Blank End -->
+
+
+        <!-- Footer Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="bg-light rounded-top p-4">
+                <div class="row">
+                    <div class="col-12 col-sm-6 text-center text-sm-start">
+                        &copy; <a href="{% url 'supervisor:dashboard_super' %}">Smart For Green</a>, All Right Reserved. 
+                    </div>
+                    <div class="col-12 col-sm-6 text-center text-sm-end">
+                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        Designed By <a href="">Mohamed Hedi Gharbi</a>
+                    </br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+    </div>
+    <!-- Content End -->
+    <script>
+        document.getElementById('addProjectBtn').addEventListener('click', function() {
+        var modal = new bootstrap.Modal(document.getElementById('projectFormModal'), {
+            keyboard: false
+            });
+        modal.show();
+        });
+    </script>
+{% endblock %}
+
+
+
+
