@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from .models import Supervisor
+from .models.supervisor import Supervisor
 
 class SupervisorAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):

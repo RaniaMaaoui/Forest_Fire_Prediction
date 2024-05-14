@@ -1,5 +1,5 @@
 from django import forms
-from supervisor.models import Supervisor
+from supervisor.models.supervisor import Supervisor
 from django.contrib.auth.hashers import check_password
 
 class SupervisorLoginForm(forms.Form):

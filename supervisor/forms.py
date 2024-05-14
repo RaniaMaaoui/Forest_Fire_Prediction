@@ -1,6 +1,6 @@
 from django         import forms
 from client.models  import Client
-
+from supervisor.models.project  import Project
 
 class ClientForm(forms.ModelForm):  
     password_confirmation = forms.CharField(
@@ -38,3 +38,54 @@ class ClientForm(forms.ModelForm):
             if Client.objects.filter(email=email).exists():
                 raise forms.ValidationError("This email is already in use.")
             return email
+
+
+
+
+class ProjectForm(forms.ModelForm):
+    client = forms.ModelChoiceField(
+        queryset = Client.objects.all(),
+        required = True,
+        empty_label = 'None',
+        widget      = forms.Select( attrs={
+            'name': 'client',
+            'class': 'form-control',
+            'placeholder': 'Select Client'
+        })
+    )
+    class Meta:
+        model = Project
+        fields = ['name', 'city', 'descp', 'client', 'piece_joindre', 'date_debut', 'date_fin']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Project Name', 
+                'required': True
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Region Name', 
+                'required': True
+            }),
+            'descp': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Project Description'
+            }),
+            'piece_joindre': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
+            'date_debut': forms.DateTimeInput(attrs={
+                'class': 'form-control', 
+                'type': 'datetime-local'
+            }, format='%Y-%m-%dT%H:%M'),
+            'date_fin': forms.DateTimeInput(attrs={
+                'class': 'form-control', 
+                'type': 'datetime-local'
+            }, format='%Y-%m-%dT%H:%M')
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        #? Handle the datetime-local input format for browser compatibility
+        self.fields['date_debut'].input_formats = ('%Y-%m-%dT%H:%M',)
+        self.fields['date_fin'].input_formats = ('%Y-%m-%dT%H:%M',)

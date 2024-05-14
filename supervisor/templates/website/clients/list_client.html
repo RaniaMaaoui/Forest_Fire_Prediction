@@ -3,378 +3,372 @@
 {% load static %}
 
 {% block content %}
-<div class="content">
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-        <a href="#" class="sidebar-toggler flex-shrink-0" aria-label="Toggle sidebar">
-            <i class="fa fa-bars"></i>
-        </a>
-        <div class="navbar-nav align-items-center ms-auto">
-            <div class="nav-item dropdown">
-                <a href="{% url 'supervisor:dashboard_super' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="fa fa-bell me-lg-2"></i>
-                    <span class="d-none d-lg-inline-flex">Notification</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                    <a href="#" class="dropdown-item text-center">See all notifications</a>
+    <div class="content">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+            <a href="#" class="sidebar-toggler flex-shrink-0" aria-label="Toggle sidebar">
+                <i class="fa fa-bars"></i>
+            </a>
+            <div class="navbar-nav align-items-center ms-auto">
+                <div class="nav-item dropdown">
+                    <a href="{% url 'supervisor:dashboard_super' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa fa-bell me-lg-2"></i>
+                        <span class="d-none d-lg-inline-flex">Notification</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item text-center">See all notifications</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
-    <!-- Navbar End -->
+        </nav>
+        <!-- Navbar End -->
 
 
 
 
-    <div class="row vh-100 bg-light rounded  mx-0">
+
         <!-- Clients List Start -->
         <div class="container-fluid pt-4 px-4">
-            <div class="text-end mb-3">
-                <a class="btn btn-primary" id="addProjectBtn">+ Add New Client</a>
-            </div>
+            <div class="bg-light rounded p-4">
+                <div class="text-end mb-3">
+                    <a class="btn btn-primary gradient-button" id="addProjectBtn">+ Add New Client</a>
+                </div>
 
                 <!-- Add New Client Form Modal -->               
-            <div class="modal" id="addClientFormModal" tabindex="-1" aria-labelledby="addClientFormModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addClientFormModalLabel">Add New Client</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" enctype="multipart/form-data" id="addClientFormContent" action="{% url 'supervisor:add_client' %}">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <!-- Last Name -->
-                                        <div class="form-group">
-                                            <label for="id_lastName">Last Name</label>
-                                            {{ form.lastName }}
-                                            {{ form.errors.lastName }}
+                <div class="modal" id="addClientFormModal" tabindex="-1" aria-labelledby="addClientFormModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content" style="border: 3px solid #32CD32; border-radius: 15px;">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addClientFormModalLabel">Add New Client</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" enctype="multipart/form-data" id="addClientFormContent" action="{% url 'supervisor:add_client' %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Last Name -->
+                                            <div class="form-group">
+                                                <label for="id_lastName">Last Name</label>
+                                                {{ form.lastName }}
+                                                {{ form.errors.lastName }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- First Name -->
+                                            <div class="form-group">
+                                                <label for="id_firstName">First Name</label>
+                                                {{ form.firstName }}
+                                                {{ form.errors.firstName }}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <!-- First Name -->
-                                        <div class="form-group">
-                                            <label for="id_firstName">First Name</label>
-                                            {{ form.firstName }}
-                                            {{ form.errors.firstName }}
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <!-- Username -->
-                                        <div class="form-group">
-                                            <label for="id_username">Username</label>
-                                            {{ form.username }}
-                                            {{ form.errors.username }}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Username -->
+                                            <div class="form-group">
+                                                <label for="id_username">Username</label>
+                                                {{ form.username }}
+                                                {{ form.errors.username }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Phone -->
+                                            <div class="form-group">
+                                                <label for="id_phone">Phone</label>
+                                                {{ form.phone }}
+                                                {{ form.errors.phone }}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <!-- Phone -->
-                                        <div class="form-group">
-                                            <label for="id_phone">Phone</label>
-                                            {{ form.phone }}
-                                            {{ form.errors.phone }}
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Email -->
+                                            <div class="form-group">
+                                                <label for="id_email">Email</label>
+                                                {{ form.email }}
+                                                {{ form.errors.email }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Select Image -->
+                                            <div class="form-group">
+                                                <label for="id_image">Select Image</label>
+                                                {{ form.image }}
+                                                {{ form.errors.image }}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <!-- Email -->
-                                        <div class="form-group">
-                                            <label for="id_email">Email</label>
-                                            {{ form.email }}
-                                            {{ form.errors.email }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <!-- Select Image -->
-                                        <div class="form-group">
-                                            <label for="id_image">Select Image</label>
-                                            {{ form.image }}
-                                            {{ form.errors.image }}
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <!-- Password -->
-                                        <div class="form-group">
-                                            <label for="id_password">Password</label>
-                                            {{ form.password }}
-                                            {{ form.errors.password }}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Password -->
+                                            <div class="form-group">
+                                                <label for="id_password">Password</label>
+                                                {{ form.password }}
+                                                {{ form.errors.password }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Confirmed Password -->
+                                            <div class="form-group">
+                                                <label for="id_password_confirmation">Confirmed Password</label>
+                                                {{ form.password_confirmation }}
+                                                {{ form.errors.password_confirmation }}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <!-- Confirmed Password -->
-                                        <div class="form-group">
-                                            <label for="id_password_confirmation">Confirmed Password</label>
-                                            {{ form.password_confirmation }}
-                                            {{ form.errors.password_confirmation }}
-                                        </div>
+                                    <!-- Submit Button -->
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary gradient-button" style="padding: 10px 100px; border-radius: 20px;">Submit</button>
                                     </div>
-                                </div>
-                                <!-- Submit Button -->
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-success btn-lg">Submit</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Client Form Modal End -->
-
-
-                
-
-
-            <div class="row">
-                {% for client in clients %}
-                    <!-- Update Client Form Modal -->
-                    <div class="modal" id="updateClientFormModal" tabindex="-1" aria-labelledby="updateClientFormModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                            <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="updateClientFormModalLabel">Update Client</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" enctype="multipart/form-data" id="updateClientFormContent" action="{% url 'supervisor:update_client' client.pk %}">
-                                        {% csrf_token %}
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <!-- Last Name -->
-                                                <div class="form-group">
-                                                    <label for="id_lastName">Last Name</label>
-                                                    {{ form.lastName }}
-                                                    {{ form.errors.lastName }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <!-- First Name -->
-                                                <div class="form-group">
-                                                    <label for="id_firstName">First Name</label>
-                                                    {{ form.firstName }}
-                                                    {{ form.errors.firstName }}
-                                                </div>
-                                            </div>
-                                        </div>
-        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <!-- Username -->
-                                                <div class="form-group">
-                                                    <label for="id_username">Username</label>
-                                                    {{ form.username }}
-                                                    {{ form.errors.username }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <!-- Phone -->
-                                                <div class="form-group">
-                                                    <label for="id_phone">Phone</label>
-                                                    {{ form.phone }}
-                                                    {{ form.errors.phone }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <!-- Email -->
-                                                <div class="form-group">
-                                                    <label for="id_email">Email</label>
-                                                    {{ form.email }}
-                                                    {{ form.errors.email }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <!-- Select Image -->
-                                                <div class="form-group">
-                                                    <label for="id_image">Select Image</label>
-                                                    {{ form.image }}
-                                                    {{ form.errors.image }}
-                                                </div>
-                                            </div>
-                                        </div>
-        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <!-- Password -->
-                                                <div class="form-group">
-                                                    <label for="id_password">Password</label>
-                                                    {{ form.password }}
-                                                    {{ form.errors.password }}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <!-- Confirmed Password -->
-                                                <div class="form-group">
-                                                    <label for="id_password_confirmation">Confirmed Password</label>
-                                                    {{ form.password_confirmation }}
-                                                    {{ form.errors.password_confirmation }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Submit Button -->
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-success btn-lg">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <!-- Client Form Modal End -->
+                </div>
+                <!-- Client Form Modal End -->
 
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <div class="dropdown float-end">
-                                    <a href="#" class="bi bi-three-dots-vertical" data-bs-toggle="dropdown"></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a onclick="updateClient('{{client.pk}}')" class="dropdown-item">Edit</a></li>
-                                        <li><a href="{% url 'supervisor:delete_client' client.pk %}" class="dropdown-item" onclick="return confirm('Are you sure you want to delete this client?');">Delete</a></li>
-                                    </ul>
+                <div class="row">
+                    {% for client in clients %}
+                        <!-- Update Client Form Modal -->
+                        <div class="modal" id="updateClientFormModal" tabindex="-1" aria-labelledby="updateClientFormModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content" style="border: 3px solid #32CD32; border-radius: 15px;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="updateClientFormModalLabel">Update Client</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" enctype="multipart/form-data" id="updateClientFormContent" action="{% url 'supervisor:update_client' client.pk %}">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <!-- Last Name -->
+                                                    <div class="form-group">
+                                                        <label for="id_lastName">Last Name</label>
+                                                        {{ form.lastName }}
+                                                        {{ form.errors.lastName }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!-- First Name -->
+                                                    <div class="form-group">
+                                                        <label for="id_firstName">First Name</label>
+                                                        {{ form.firstName }}
+                                                        {{ form.errors.firstName }}
+                                                    </div>
+                                                </div>
+                                            </div>
+            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <!-- Username -->
+                                                    <div class="form-group">
+                                                        <label for="id_username">Username</label>
+                                                        {{ form.username }}
+                                                        {{ form.errors.username }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!-- Phone -->
+                                                    <div class="form-group">
+                                                        <label for="id_phone">Phone</label>
+                                                        {{ form.phone }}
+                                                        {{ form.errors.phone }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <!-- Email -->
+                                                    <div class="form-group">
+                                                        <label for="id_email">Email</label>
+                                                        {{ form.email }}
+                                                        {{ form.errors.email }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!-- Select Image -->
+                                                    <div class="form-group">
+                                                        <label for="id_image">Select Image</label>
+                                                        {{ form.image }}
+                                                        {{ form.errors.image }}
+                                                    </div>
+                                                </div>
+                                            </div>
+            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <!-- Password -->
+                                                    <div class="form-group">
+                                                        <label for="id_password">Password</label>
+                                                        {{ form.password }}
+                                                        {{ form.errors.password }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!-- Confirmed Password -->
+                                                    <div class="form-group">
+                                                        <label for="id_password_confirmation">Confirmed Password</label>
+                                                        {{ form.password_confirmation }}
+                                                        {{ form.errors.password_confirmation }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Submit Button -->
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary gradient-button" style="padding: 10px 100px; border-radius: 20px;">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    {% if client.image %}
-                                    <img src="{{ client.image.url }}" class="rounded-circle avatar-md img-thumbnail" alt="profile">
-                                    {% else %}
-                                    <img src="{% static 'img/default-avatar.jpg' %}" class="rounded-circle avatar-md img-thumbnail" alt="default">
-                                    {% endif %}
-                                    <h5 class="mt-3">{{ client.firstName }} {{ client.lastName }}</h5>
-                                    <p>{{ client.email }}</p>
-                                </div>
-                                <div class="mt-auto">
-                                    <div class="row text-center">
-                                        <div class="col">
-                                            <a href="#" class="btn btn-outline-primary" data-bs-toggle="popover" data-bs-content="{{ client.phone }}" data-bs-html="true" data-bs-placement="top" title="Phone"><i class="bi bi-telephone-fill"></i></a>
-                                        </div>
-                                        <div class="col">
-                                            <a href="#" class="btn btn-outline-primary" data-bs-toggle="popover" data-bs-content="{{ client.email }}" data-bs-html="true" data-bs-placement="top" title="Email"><i class="bi bi-envelope-fill"></i></a>
+                            </div>
+                        </div>
+                        <!-- Client Form Modal End -->
+
+                        <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="dropdown float-end">
+                                        <a href="#" class="bi bi-three-dots-vertical" data-bs-toggle="dropdown"></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a onclick="updateClient('{{client.pk}}')" class="dropdown-item">Edit</a></li>
+                                            <li><a href="{% url 'supervisor:delete_client' client.pk %}" class="dropdown-item" onclick="return confirm('Are you sure you want to delete this client?');">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="text-center">
+                                        {% if client.image %}
+                                        <img src="{{ client.image.url }}" class="rounded-circle avatar-md img-thumbnail" alt="profile">
+                                        {% else %}
+                                        <img src="{% static 'img/default-avatar.jpg' %}" class="rounded-circle avatar-md img-thumbnail" alt="default">
+                                        {% endif %}
+                                        <h5 class="mt-3">{{ client.firstName }} {{ client.lastName }}</h5>
+                                        <p>{{ client.email }}</p>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <div class="row text-center">
+                                            <div class="col">
+                                                <a href="#" class="btn btn-outline-primary" data-bs-toggle="popover" data-bs-content="{{ client.phone }}" data-bs-html="true" data-bs-placement="top" title="Phone"><i class="bi bi-telephone-fill"></i></a>
+                                            </div>
+                                            <div class="col">
+                                                <a href="#" class="btn btn-outline-primary" data-bs-toggle="popover" data-bs-content="{{ client.email }}" data-bs-html="true" data-bs-placement="top" title="Email"><i class="bi bi-envelope-fill"></i></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {% empty %}
-                    <div class="col-12">
-                        <p>No clients found.</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        <!-- Clients List End -->
-    </div>
-
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid mt-auto">
-        <div class="footer bg-light rounded-top p-4">
-            <div class="row">
-                <div class="col-12 col-sm-6 text-center text-sm-start">
-                    &copy; <a href="{% url 'supervisor:dashboard_super' %}">Smart For Green</a>, All Rights Reserved.
-                </div>
-                <div class="col-12 col-sm-6 text-center text-sm-end">
-                    Designed By <a href="">Mohamed Hedi Gharbi</a>
+                        {% empty %}
+                        <div class="col-12">
+                            <p>No clients found.</p>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
+            <!-- Clients List End -->
         </div>
-    </div>
-    <!-- Footer End -->
 
-</div>
-<!-- Content End -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl, {
-                trigger: 'focus'
+
+
+        <!-- Footer Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="bg-light rounded-top p-4">
+                <div class="row">
+                    <div class="col-12 col-sm-6 text-center text-sm-start">
+                        &copy; <a href="{% url 'supervisor:dashboard_super' %}">Smart For Green</a>, All Rights Reserved.
+                    </div>
+                    <div class="col-12 col-sm-6 text-center text-sm-end">
+                        Designed By <a href="">Mohamed Hedi Gharbi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+    </div>
+    <!-- Content End -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                    trigger: 'focus'
+                });
             });
+
+
+        document.getElementById('addProjectBtn').addEventListener('click', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            myModal.show();
         });
 
 
-    document.getElementById('addProjectBtn').addEventListener('click', function () {
-        var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        myModal.show();
+        console.log(location.search.includes('update_client'))
+        if (window.location.search.includes('update_client')){
+            var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            myModal.show();
+        }
     });
 
-
-    console.log(location.search.includes('update_client'))
-    if (window.location.search.includes('update_client')){
-        var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-        myModal.show();
-    }
-});
-
-    function updateQueryStringParameter(key, value) {
-        var uri = window.location.href;
-        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-        if (uri.match(re)) {
-            window.history.replaceState({}, '', uri.replace(re, '$1' + key + "=" + value + '$2'));
-        } else {
-            window.history.replaceState({}, '', uri + separator + key + "=" + value);
-        }
-    }
-
-
-
- 
-function updateClientWrapper() { 
-  let prevClientId; 
-  let clientData;
-  return (clientId) => {
-    if(prevClientId !== clientId) {
-      updateQueryStringParameter('update_client', clientId);
-      fetch(`/dashboard_super/update_client/${clientId}`, { withCredentials: true })
-        .then(res => res.json())
-        .then(data => {
-          prevClientId = clientId;
-          clientData = data;
-          console.log(data);
-          const currentForm = document.getElementById('updateClientFormContent')
-          let controls = currentForm.elements;
-
-            for (let i = 0; i < controls.length; i++) {
-                if(controls[i] instanceof HTMLInputElement && controls[i].type !== 'file' && data[controls[i].name])
-                    controls[i].value = data[controls[i].name]
+        function updateQueryStringParameter(key, value) {
+            var uri = window.location.href;
+            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            if (uri.match(re)) {
+                window.history.replaceState({}, '', uri.replace(re, '$1' + key + "=" + value + '$2'));
+            } else {
+                window.history.replaceState({}, '', uri + separator + key + "=" + value);
             }
-        }).catch(err => console.log({ err }));	
-    }	
-    showUpdateClientModal();
-  } 
-}
+        }
 
-function showUpdateClientModal() {
-  var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
-    backdrop: 'static',
-    keyboard: false
-  });
-  myModal.show();
-}
 
-    const updateClient = updateClientWrapper();
+
     
+    function updateClientWrapper() { 
+    let prevClientId; 
+    let clientData;
+    return (clientId) => {
+        if(prevClientId !== clientId) {
+        updateQueryStringParameter('update_client', clientId);
+        fetch(`/dashboard_super/update_client/${clientId}`, { withCredentials: true })
+            .then(res => res.json())
+            .then(data => {
+            prevClientId = clientId;
+            clientData = data;
+            console.log(data);
+            const currentForm = document.getElementById('updateClientFormContent')
+            let controls = currentForm.elements;
 
+                for (let i = 0; i < controls.length; i++) {
+                    if(controls[i] instanceof HTMLInputElement && controls[i].type !== 'file' && data[controls[i].name])
+                        controls[i].value = data[controls[i].name]
+                }
+            }).catch(err => console.log({ err }));	
+        }	
+        showUpdateClientModal();
+    } 
+    }
 
+    function showUpdateClientModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    myModal.show();
+    }
 
+        const updateClient = updateClientWrapper();
+    
 
 </script>
 {% endblock %}

@@ -1,36 +1,34 @@
 {% extends 'base2.html' %}
 
-
 {% block content %}
-    <!-- Content Start -->
-    <div class="content">
-        <!-- Navbar Start -->
-        <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-            <a href="#" class="sidebar-toggler flex-shrink-0">
-                <i class="fa fa-bars"></i>
-            </a>
-            <div class="navbar-nav align-items-center ms-auto">
-
-                <div class="nav-item dropdown">
-                    <a href="{% url 'supervisor:dashboard_super' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="fa fa-bell me-lg-2"></i>
-                        <span class="d-none d-lg-inline-flex">Notificatin</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                        <a href="#" class="dropdown-item text-center">See all notifications</a>
-                    </div>
+<!-- Content Start -->
+<div class="content">
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+        <a href="#" class="sidebar-toggler flex-shrink-0">
+            <i class="fa fa-bars"></i>
+        </a>
+        <div class="navbar-nav align-items-center ms-auto">
+            <div class="nav-item dropdown">
+                <a href="{% url 'supervisor:dashboard_super' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fa fa-bell me-lg-2"></i>
+                    <span class="d-none d-lg-inline-flex">Notification</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                    <a href="#" class="dropdown-item text-center">See all notifications</a>
                 </div>
             </div>
-        </nav>
-        <!-- Navbar End -->
+        </div>
+    </nav>
+    <!-- Navbar End -->
 
-
-        <!-- Blank Start -->
-        <div class="container-fluid pt-4 px-4">
-
+    
+    <!-- Blank Start -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light rounded p-4">
             <!-- Add Project Button Start -->
             <div class="text-end mb-3">
-                <button class="btn btn-primary" id="addProjectBtn">+ Add Project</button>
+                <button class="btn btn-primary gradient-button" id="addProjectBtn">+ Add Project</button>
             </div>
             <!-- Add Project Button End -->
 
@@ -43,20 +41,23 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="projectFormContent">
+                            <form method="post" enctype="multipart/form-data" id="addProjectFormContent" action="{% url 'supervisor:add_project' %}">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-6">
                                         <!-- Project Name -->
                                         <div class="form-group">
                                             <label for="projectName">Project Name</label>
-                                            <input type="text" class="form-control" id="projectName" name="projectName" required>
+                                            {{ form.name }}
+                                            {{ form.errors.name }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <!-- Region Name -->
                                         <div class="form-group">
                                             <label for="regionName">Region Name</label>
-                                            <input type="text" class="form-control" id="regionName" name="regionName" required>
+                                            {{ form.city }}
+                                            {{ form.errors.city }}
                                         </div>
                                     </div>
                                 </div>
@@ -65,14 +66,16 @@
                                         <!-- Start Date -->
                                         <div class="form-group">
                                             <label for="startDate">Start Date</label>
-                                            <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                            {{ form.date_debut }}
+                                            {{ form.errors.date_debut }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <!-- End Date -->
                                         <div class="form-group">
                                             <label for="endDate">End Date</label>
-                                            <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                            {{ form.date_fin }}
+                                            {{ form.errors.date_fin }}
                                         </div>
                                     </div>
                                 </div>
@@ -81,27 +84,28 @@
                                         <!-- Choose An Existing Client -->
                                         <div class="form-group">
                                             <label for="existingClient">Choose An Existing Client</label>
-                                            <select class="form-select" id="existingClient" name="existingClient">
-                                                <!-- Populate options as needed -->
-                                            </select>
+                                            {{ form.client }}
+                                            {{ form.errors.client }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <!-- Contract (choose file) -->
                                         <div class="form-group">
                                             <label for="contractFile">Contract (choose file)</label>
-                                            <input type="file" class="form-control-file" id="contractFile" name="contractFile">
+                                            {{ form.piece_joindre }}
+                                            {{ form.errors.piece_joindre }}
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Project Description -->
                                 <div class="form-group">
                                     <label for="projectDescription">Project Description</label>
-                                    <textarea class="form-control" id="projectDescription" name="projectDescription" rows="3" required></textarea>
+                                    {{ form.descp }}
+                                    {{ form.errors.descp }}
                                 </div>
                                 <!-- Submit Button -->
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                                    <button type="submit" class="btn btn-primary gradient-button" style="padding: 10px 100px; border-radius: 20px;">Next</button>
                                 </div>
                             </form>
                         </div>
@@ -109,42 +113,137 @@
                 </div>
             </div>
             <!-- Project Form Modal End -->
-            
 
+            <!-- Project List Start -->
+            {% for project in projects_by_client %}
+            <div class="alert {% cycle 'alert-primary' 'alert-secondary' 'alert-info' 'alert-success' 'alert-danger' 'alert-warning' 'alert-light' 'alert-dark' %} clickable-modal-launcher" role="alert" data-bs-toggle="modal" data-bs-target="#projectList" data-project-name="{{ project.full_name }}" data-project-count="{{ project.count }}">
+                <strong>Project by client: {{ project.full_name }}</strong> - Projects: {{ project.count }}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p>No Project found.</p>
+                </div>
+            {% endfor %}
+            <!-- Project List End -->
             
+            <!--* Project list   -->
+                <!-- Project Form Modal Start (Initially Hidden) -->
+                <div class="modal" id="projectList" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="projectFormModalLabel" style="text-align: center;">List Project Of Client</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container mt-4">
+                                    <div class="row">
+                                        {% for project in projects %}
+                                            <!-- Project Card Start -->
+                                            <div class="col-md-4">
+                                                <div class="project-card">
+                                                    <div class="project-card-body">
+                                                        <h5 class="project-card-title">Project Name: {{ project.name }} </h5>
+                                                        <p class="project-card-text">{{ project.descp }}</p>
+                                                        <div class="project-card-actions">
+                                                            <a class="project-card-action btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#projectDetailModal"
+                                                                data-project-name="{{ project.name }}" data-project-desc="{{ project.descp }}"
+                                                                data-project-start="{{ project.date_debut }}" data-project-end="{{ project.date_fin }}"
+                                                                data-project-client="{{ project.client}}">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                            <a href="#" class="project-card-action btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                                            <a href="{% url 'supervisor:delete_project' project.pk %}" class="project-card-action btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this project?');"><i class="fa fa-trash"></i></a>
+    
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Project Card End -->
+                                        {% empty %}
+                                        <div class="col-12">
+                                            <p>No Project found.</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <!-- Project List End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Form Modal End -->
+                <!--* End project list  -->
 
         </div>
-        <!-- Blank End -->
+    </div>    
 
-
-        <!-- Footer Start -->
-        <div class="container-fluid pt-4 px-4">
-            <div class="bg-light rounded-top p-4">
-                <div class="row">
-                    <div class="col-12 col-sm-6 text-center text-sm-start">
-                        &copy; <a href="{% url 'supervisor:dashboard_super' %}">Smart For Green</a>, All Right Reserved. 
-                    </div>
-                    <div class="col-12 col-sm-6 text-center text-sm-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a href="">Mohamed Hedi Gharbi</a>
-                    </br>
-                    </div>
+    <!-- Footer Start -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light rounded-top p-4">
+            <div class="row">
+                <div class="col-12 col-sm-6 text-center text-sm-start">
+                    &copy; <a href="{% url 'supervisor:dashboard_super' %}">Smart For Green</a>, All Right Reserved.
+                </div>
+                <div class="col-12 col-sm-6 text-center text-sm-end">
+                    Designed By <a href="#">Mohamed Hedi Gharbi</a>
                 </div>
             </div>
         </div>
-        <!-- Footer End -->
     </div>
-    <!-- Content End -->
-    <script>
-        document.getElementById('addProjectBtn').addEventListener('click', function() {
-        var modal = new bootstrap.Modal(document.getElementById('projectFormModal'), {
-            keyboard: false
-            });
-        modal.show();
+    <!-- Footer End -->
+</div>
+<!-- Content End -->
+
+<!-- Project Detail Modal (Initially Hidden) -->
+<div id="projectDetailModal" class="modal" tabindex="-1" aria-labelledby="projectDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-top-start" style="margin: 0; position: absolute; top: 0; left: 0;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="projectDetailModalLabel">Project Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Project Name:</strong> <span id="detailProjectName"></span></p>
+                <p><strong>Description:</strong> <span id="detailProjectDesc"></span></p>
+                <p><strong>Start Date:</strong> <span id="detailStartDate"></span></p>
+                <p><strong>End Date:</strong> <span id="detailEndDate"></span></p>
+                <p><strong>Client:</strong> <span id="detailClient"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var projectDetailModal = new bootstrap.Modal(document.getElementById('projectDetailModal'));
+    var projectCardActions = document.querySelectorAll('.project-card-action.btn.btn-sm.btn-primary');
+
+    projectCardActions.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var projectName = btn.getAttribute('data-project-name');
+            var projectDesc = btn.getAttribute('data-project-desc');
+            var projectStart = btn.getAttribute('data-project-start');
+            var projectEnd = btn.getAttribute('data-project-end');
+            var projectClient = btn.getAttribute('data-project-client');
+
+            document.getElementById('detailProjectName').textContent = projectName;
+            document.getElementById('detailProjectDesc').textContent = projectDesc;
+            document.getElementById('detailStartDate').textContent = projectStart;
+            document.getElementById('detailEndDate').textContent = projectEnd;
+            document.getElementById('detailClient').textContent = projectClient;
+
+            projectDetailModal.show();
         });
-    </script>
+    });
+
+    document.getElementById('addProjectBtn').addEventListener('click', function () {
+        var myModal = new bootstrap.Modal(document.getElementById('projectFormModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        myModal.show();
+    });
+});
+</script>
 {% endblock %}
-
-
-
-

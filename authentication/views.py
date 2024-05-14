@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .forms import SupervisorLoginForm
-from supervisor.models import Supervisor
+from supervisor.models.supervisor import Supervisor
 
 def client(request):
     return render(request, 'website/client.html')
