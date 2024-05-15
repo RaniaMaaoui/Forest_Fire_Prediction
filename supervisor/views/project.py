@@ -5,6 +5,7 @@ from supervisor.models.project      import Project
 from django.contrib                 import messages
 from django.db.models               import Count, Value
 from django.db.models.functions     import Concat
+from django.urls import reverse
 
 
 
@@ -31,18 +32,24 @@ def list_project(request):
 
 @login_required(login_url='supervisor_login')
 def add_project(request):
+    form = ProjectForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
-        form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project = form.save(commit=False)
             project.save()
             form.save_m2m()
             messages.success(request, 'Project added successfully.')
-            return redirect('supervisor:list_project')
+            request.session['project_added'] = True  #* Set session variable
+            return redirect(reverse('supervisor:add_project'))  #* Redirection après succès
         else:
             messages.error(request, 'Please correct the errors below.')
-    
-    return redirect('supervisor:list_project')
+    else:
+        form = ProjectForm()
+    show_map_modal = request.session.get('project_added', False)  #* Read without removing
+    return render(request, 'website/project.html', {'form': form, 'show_map_modal': show_map_modal})
+
+
+
 
 
 

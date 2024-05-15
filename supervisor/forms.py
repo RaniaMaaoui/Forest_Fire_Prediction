@@ -1,6 +1,7 @@
-from django         import forms
-from client.models  import Client
-from supervisor.models.project  import Project
+from django                         import forms
+from client.models                  import Client
+from supervisor.models.project      import Project
+from supervisor.models.localisation import Localisation
 
 class ClientForm(forms.ModelForm):  
     password_confirmation = forms.CharField(
@@ -42,17 +43,31 @@ class ClientForm(forms.ModelForm):
 
 
 
+class CustomModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.gouvernorat_libelle}, {obj.delegation_libelle}, {obj.localite_libelle}"
+
 class ProjectForm(forms.ModelForm):
     client = forms.ModelChoiceField(
-        queryset = Client.objects.all(),
-        required = True,
-        empty_label = 'None',
-        widget      = forms.Select( attrs={
+        queryset=Client.objects.all(),
+        required=True,
+        empty_label='None',
+        widget=forms.Select(attrs={
             'name': 'client',
             'class': 'form-control',
             'placeholder': 'Select Client'
         })
     )
+    city = CustomModelChoiceField(
+        queryset=Localisation.objects.all(),
+        required=True,
+        empty_label='Select Location',
+        widget=forms.Select(attrs={
+            'name': 'city',
+            'class': 'form-control'
+        })
+    )
+
     class Meta:
         model = Project
         fields = ['name', 'city', 'descp', 'client', 'piece_joindre', 'date_debut', 'date_fin']
@@ -62,14 +77,10 @@ class ProjectForm(forms.ModelForm):
                 'placeholder': 'Project Name', 
                 'required': True
             }),
-            'city': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Region Name', 
-                'required': True
-            }),
             'descp': forms.Textarea(attrs={
                 'class': 'form-control', 
-                'placeholder': 'Project Description'
+                'placeholder': 'Project Description',
+                'rows': 2,  
             }),
             'piece_joindre': forms.ClearableFileInput(attrs={
                 'class': 'form-control'
@@ -86,6 +97,6 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
-        #? Handle the datetime-local input format for browser compatibility
+        # Handle the datetime-local input format for browser compatibility
         self.fields['date_debut'].input_formats = ('%Y-%m-%dT%H:%M',)
         self.fields['date_fin'].input_formats = ('%Y-%m-%dT%H:%M',)

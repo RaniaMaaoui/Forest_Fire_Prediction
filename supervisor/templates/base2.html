@@ -27,8 +27,14 @@
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
+    <!-- Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" 
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" 
+    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
 </head>
-<body>
+<body data-showmapmodal="{{ show_map_modal|yesno:'true,false' }}" data-list-url="{% url 'supervisor:list_project' %}">
     <div class="container-xxl position-relative bg-white d-flex p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -56,7 +62,7 @@
                     <a href="{% url 'supervisor:noeuds' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>List Nodes</a>
                     <a href="{% url 'supervisor:chart_super' %}" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
                     <div style="position: fixed; bottom: 20px;">
-                        <a href="{% url 'sign_out' %}" class="nav-item nav-link"><i class="fa fa-sign-out-alt me-2"></i>Sign-Out</a>
+                        <a href="{% url 'sign_out' %}" class="nav-item nav-link"><i class="fa fa-sign-out-alt me-2"></i>Log-Out</a>
                     </div>
                 </div>
             </nav>
