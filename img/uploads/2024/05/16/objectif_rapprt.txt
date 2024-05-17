@@ -1,0 +1,11 @@
+* mardi
+	- les sprints (1, 2, 3, 4)
+	- developpement (list_project)
+
+
+* jeudi 
+	-sprint 4, 2
+
+* lundi 
+	-sprint 3, 5, 6
+

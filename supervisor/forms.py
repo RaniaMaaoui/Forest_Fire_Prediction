@@ -42,7 +42,6 @@ class ClientForm(forms.ModelForm):
 
 
 
-
 class CustomModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return f"{obj.gouvernorat_libelle}, {obj.delegation_libelle}, {obj.localite_libelle}"
@@ -64,7 +63,8 @@ class ProjectForm(forms.ModelForm):
         empty_label='Select Location',
         widget=forms.Select(attrs={
             'name': 'city',
-            'class': 'form-control'
+            'class': 'form-control',
+            'onchange': 'updateMap()'  # Add this line to trigger JavaScript function
         })
     )
 

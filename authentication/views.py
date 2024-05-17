@@ -8,7 +8,7 @@ def client(request):
 
 def supervisor_login(request):
     if request.method == 'POST':
-        form = SupervisorLoginForm(request.POST)
+        form = SupervisorLoginForm(request.POST) 
         if form.is_valid():
             email = form.cleaned_data['email']
             supervisor = Supervisor.objects.get(email=email)

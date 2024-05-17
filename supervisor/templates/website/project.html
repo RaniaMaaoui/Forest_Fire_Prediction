@@ -107,16 +107,21 @@
 
             <!-- Project List Start -->
             {% for project in projects_by_client %}
-            <div class="alert {% cycle 'alert-primary' 'alert-secondary' 'alert-info' 'alert-success' 'alert-danger' 'alert-warning' 'alert-light' 'alert-dark' %} clickable-modal-launcher" role="alert" data-bs-toggle="modal" data-bs-target="#projectList" data-project-name="{{ project.full_name }}" data-project-count="{{ project.count }}">
-                <strong>Project by client: {{ project.full_name }}</strong> - Projects: {{ project.count }}
+            <a href="?reload=true&client_id={{project.client_id}}">
+                <div class="alert {% cycle 'alert-primary' 'alert-secondary' 'alert-info' 'alert-success' 'alert-danger' 'alert-warning' 'alert-light' 'alert-dark' %} clickable-modal-launcher" >
+                    <strong>Project by client: {{ project.full_name }}</strong> - Projects: {{ project.count }}
                 </div>
+            </a>
+
             {% empty %}
                 <div class="col-12">
                     <p>No Project found.</p>
                 </div>
             {% endfor %}
             <!-- Project List End -->
-            
+            <div id="list"  role="alert" data-bs-toggle="modal" data-bs-target="#projectList" style="display: none;">
+
+            </div>
             <!--* Project list   -->
                 <!-- Project Form Modal Start (Initially Hidden) -->
                 <div class="modal" id="projectList" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
@@ -179,6 +184,8 @@
                                     <div class="row-map">
                                         <!-- Content-Map Container -->
                                         <div class="col-map">
+                                            <div id="selected-map" style="display: none;" map-latitude="{{ data.latitude }}" map-longitude="{{ data.longitude }}">
+                                            </div>
                                             <div class="content-map">
                                                 <div id="map" style="width: 100%; height: 100%;">
                                                     <script src="{% static 'js/map.js' %}"></script>
@@ -292,6 +299,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         myModal.show();
     });
+
+    const link = window.location.search;
+    if(link.includes('client_id') && link.includes('reload')) {
+    document.querySelector('#list').click();
+    window.history.replaceState(null, '', '?')
+    }
 
 
     // Lecture de la valeur de data-showmapmodal et affichage de la modal si nécessaire

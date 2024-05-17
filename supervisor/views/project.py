@@ -14,13 +14,11 @@ def list_project(request):
     client_id = request.GET.get('client_id')
     projects_by_client = Project.objects.annotate(
         full_name=Concat('client__firstName', Value(' '), 'client__lastName')
-    ).values('full_name').annotate(count=Count('client')).order_by('full_name')
-
+    ).values('full_name', 'client_id').annotate(count=Count('client')).order_by('full_name')
     if client_id:
-        projects = Project.objects.filter(client_id=client_id)  # Filter projects by client ID
+        projects = Project.objects.filter(client_id=client_id)  
     else:
         projects = Project.objects.all()
-
     form = ProjectForm()
     return render(request, 'website/project.html', {
         'projects_by_client': projects_by_client,
@@ -33,23 +31,37 @@ def list_project(request):
 @login_required(login_url='supervisor_login')
 def add_project(request):
     form = ProjectForm(request.POST or None, request.FILES or None)
+    data = {'latitude': None, 'longitude': None}
+
     if request.method == 'POST':
         if form.is_valid():
             project = form.save(commit=False)
             project.save()
             form.save_m2m()
             messages.success(request, 'Project added successfully.')
+            latitude = float(project.city.latitude)
+            longitude = float(project.city.longitude)
+            data = {'latitude': latitude, 'longitude': longitude}
             request.session['project_added'] = True  #* Set session variable
-            return redirect(reverse('supervisor:add_project'))  #* Redirection après succès
+            request.session['map_data'] = data 
+            form = ProjectForm()
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ProjectForm()
+
+    # Charger les données de la session si elles existent
+    if 'map_data' in request.session:
+        data = request.session['map_data']
+
     show_map_modal = request.session.get('project_added', False)  #* Read without removing
-    return render(request, 'website/project.html', {'form': form, 'show_map_modal': show_map_modal})
+    response = render(request, 'website/project.html', {'form': form, 'show_map_modal': show_map_modal, 'data': data})
 
+    #! Reset session variables after rendering the response
+    request.session['project_added'] = False
+    request.session['map_data'] = None
 
-
+    return response
 
 
 
