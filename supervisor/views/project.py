@@ -28,7 +28,6 @@ def list_project(request):
 
 
 
-@login_required(login_url='supervisor_login')
 def add_project(request):
     form = ProjectForm(request.POST or None, request.FILES or None)
     data = {'latitude': None, 'longitude': None}
@@ -50,7 +49,7 @@ def add_project(request):
     else:
         form = ProjectForm()
 
-    # Charger les données de la session si elles existent
+    #? Charger les données de la session si elles existent
     if 'map_data' in request.session:
         data = request.session['map_data']
 
@@ -62,7 +61,6 @@ def add_project(request):
     request.session['map_data'] = None
 
     return response
-
 
 
 @login_required(login_url='supervisor_login')
