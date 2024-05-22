@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from django.contrib.messages import constants as messages
 
 if os.name == 'nt':
     VENV_BASE = os.environ['VIRTUAL_ENV']
@@ -145,3 +146,30 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mohamedhedigharbi101@gmail.com'  
 EMAIL_HOST_PASSWORD = 'pacesqcanahtmpks'  
+
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }

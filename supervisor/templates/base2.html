@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SFG - Together We Protect Our Forests!</title>
+    <title>SFG - Together We Protect Our Farme!</title>
     <link rel="icon" type="image/png" href="{% static 'assets/img/logo4.png' %}">
 
     <!-- Google Web Fonts -->
@@ -33,6 +33,8 @@
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" 
     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 </head>
 <body data-showmapmodal="{{ show_map_modal|yesno:'true,false' }}" data-list-url="{% url 'supervisor:list_project' %}">
     <div class="container-xxl position-relative bg-white d-flex p-0">
@@ -44,11 +46,6 @@
         </div>
         <!-- Spinner End -->
 
-        <!-- Logout Button -->
-        <!-- <div class="text-end p-3">
-            <a href="{% url 'home' %}" class="btn btn-outline-primary">Logout</a>
-        </div> -->
-
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar  navbar-light">
@@ -59,8 +56,7 @@
                     <a href="{% url 'supervisor:dashboard_super' %}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <a href="{% url 'supervisor:list_client' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>Customer list</a>
                     <a href="{% url 'supervisor:list_project' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>Project List</a>
-                    <a href="{% url 'supervisor:noeuds' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>List Nodes</a>
-                    <a href="{% url 'supervisor:chart_super' %}" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
+                    <!-- <a href="{% url 'supervisor:noeuds' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>List Nodes</a> -->
                     <div style="position: fixed; bottom: 20px;">
                         <a href="{% url 'sign_out' %}" class="nav-item nav-link"><i class="fa fa-sign-out-alt me-2"></i>Log-Out</a>
                     </div>
@@ -94,5 +90,7 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 </body>
 </html>

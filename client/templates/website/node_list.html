@@ -1,0 +1,253 @@
+{% extends 'base3.html' %}
+{% load static %}
+
+
+
+{% block head %}
+    <style>
+        .card-slide {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .custom-btn {
+            background-color: var(--btn-bg-color, #27a0e1); /* Couleur par défaut */
+            border-color: var(--btn-bg-color, #27a0e1);
+            color: #fff;
+            border-radius: 20px;
+            margin-bottom: auto;
+            margin-top: 35px;
+        }
+
+        .custom-btn:hover {
+            background-color: var(--btn-hover-bg-color, #3578c5);
+            border-color: var(--btn-hover-bg-color, #3578c5);
+        }
+
+        .custom-btn.active {
+            background-color: var(--btn-hover-bg-color, #3578c5);
+            border-color: var(--btn-hover-bg-color, #3578c5);
+            color: #fff; 
+        }
+
+
+        .ms-2 {
+            margin-left: 0.5rem;
+        }
+    </style>
+
+{% endblock %}
+
+
+
+{% block content %}
+    <main class="main-content">
+        <div class="position-relative iq-banner">
+        <!--Nav Start-->
+        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar">
+            <div class="container-fluid navbar-inner">
+            <a href="{% url 'dashboard_client' %}" class="navbar-brand">
+                <!--Logo start-->
+                <div class="logo-main">
+                <div class="logo-normal">
+                    <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
+                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
+                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
+                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="logo-mini">
+                    <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
+                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
+                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
+                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
+                    </svg>
+                </div>
+                </div>
+                <!--logo End-->
+                <h4 class="logo-title">SFG</h4>
+            </a>
+            <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                <i class="icon">
+                <svg width="20px" class="icon-20" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
+                </svg>
+                </i>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon">
+                <span class="mt-2 navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+                </span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{% static 'assets/images/avatars/me.jpg' %}" alt="User-Profile" style="width: 50px; border-radius: 50%;">
+                    <div class="caption ms-3 d-none d-md-block">
+                        <h6 class="mb-0 caption-title">Mohamed Hedi Gharbi</h6>
+                        <p class="mb-0 caption-sub-title">Farm Awled Bachir</p>
+                    </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="offcanvas" href="#offcanvasExample" aria-controls="offcanvasExample">Setting</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout_client' %}">Logout</a></li>
+                    </ul>
+                </li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+        <!-- Nav Header Component Start -->
+        <div class="iq-navbar-header" style="height: 215px;">
+            <div class="container-fluid iq-container">
+            <div class="row">
+                <div class="col-md-12">
+                <div class="flex-wrap d-flex justify-content-between align-items-center">
+                    <div>
+                    <h1>Welcome Client!</h1>
+                    <p>This dashboard allows the customer to monitor their farm for any potential fire threats.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="iq-header-img">
+            <img src="{% static 'assets/images/dashboard/top-header.png' %}" alt="header" class="theme-color-default-img img-fluid w-100 h-100 animated-scaleX">
+            <img src="{% static 'assets/images/dashboard/top-header1.png' %}" alt="header" class="theme-color-purple-img img-fluid w-100 h-100 animated-scaleX">
+            <img src="{% static 'assets/images/dashboard/top-header2.png' %}" alt="header" class="theme-color-blue-img img-fluid w-100 h-100 animated-scaleX">
+            <img src="{% static 'assets/images/dashboard/top-header3.png' %}" alt="header" class="theme-color-green-img img-fluid w-100 h-100 animated-scaleX">
+            <img src="{% static 'assets/images/dashboard/top-header4.png' %}" alt="header" class="theme-color-yellow-img img-fluid w-100 h-100 animated-scaleX">
+            <img src="{% static 'assets/images/dashboard/top-header5.png' %}" alt="header" class="theme-color-pink-img img-fluid w-100 h-100 animated-scaleX">
+            </div>
+        </div>
+        <!-- Nav Header Component End -->
+        </div>
+        <div class="container-fluid content-inner mt-n5 py-0">
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+            <div class="row row-cols-1">
+                <div class="overflow-hidden d-slider1">
+                <ul class="p-0 m-0 mb-2 swiper-wrapper list-inline">
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
+                    <div class="card-body">
+                        <h5 class="card-title">Node-node N4</h5>
+                        <p>Ref: eui-70b3d57ed005c92e</p>
+                        <p>Node ID: 24</p>
+                        <div class="d-flex justify-content-between">
+                        <button class="btn btn-success custom-btn">Locate</button>
+                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="800">
+                    <div class="card-body">
+                        <h5 class="card-title">Node-node N3</h5>
+                        <p>Ref: eui-70b3d57ed005a5c4</p>
+                        <p>Node ID: 23</p>
+                        <div class="d-flex justify-content-between">
+                        <button class="btn btn-success custom-btn">Locate</button>
+                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="900">
+                    <div class="card-body">
+                        <h5 class="card-title">Node-node N2</h5>
+                        <p>Ref: eui-70b3d57ed005c92e</p>
+                        <p>Node ID: 22</p>
+                        <div class="d-flex justify-content-between">
+                        <button class="btn btn-success custom-btn">Locate</button>
+                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                        </div>
+                    </div>
+                    </li>
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="1000">
+                    <div class="card-body">
+                        <h5 class="card-title">Node-node N1</h5>
+                        <p>Ref: eui-70b3d57ed005a5c4</p>
+                        <p>Node ID: 21</p>
+                        <div class="d-flex justify-content-between">
+                        <button class="btn btn-success custom-btn">Locate</button>
+                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+                <div class="swiper-button swiper-button-next"></div>
+                <div class="swiper-button swiper-button-prev"></div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                <div class="header-title">
+                    <h4 class="card-title">Satellite</h4>
+                </div>
+                </div>
+                <div class="card-body">
+                <p>Satellite View google map</p>
+                <iframe class="w-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3902543.2003194243!2d-118.04220880485131!3d36.56083290513502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80be29b9f4abb783%3A0x4757dc6be1305318!2sInyo%20National%20Forest!5e0!3m2!1sen!2sin!4v1576668158879!5m2!1sen!2sin" height="500" allowfullscreen=""></iframe>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        <!-- Footer Section Start -->
+        <footer class="footer">
+        <div class="footer-body">
+            <ul class="left-panel list-inline mb-0 p-0">
+            <li class="list-inline-item"><a href="">Smart For Green</a></li>
+            </ul>
+            <div class="right-panel">
+            ©<script>document.write(new Date().getFullYear())</script> Designed By 
+            <a href="">Mohamed Hedi Gharbi</a>.
+            </div>
+        </div>
+        </footer>
+    </main>
+{% endblock %}
+
+
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var buttons = document.querySelectorAll('.custom-btn');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    // Remove 'active' class from all buttons
+                    buttons.forEach(function(btn) {
+                        btn.classList.remove('active');
+                    });
+                    // Add 'active' class to the clicked button
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+{% endblock %}

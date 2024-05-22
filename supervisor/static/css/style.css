@@ -595,12 +595,51 @@
 
 /* Améliorations pour la carte */
 .content-map {
-    height: 600px; 
+    height: 580px; 
     border-radius: 10px; 
     overflow: hidden; 
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
 }
 
+#nodeForm .form-group {
+    margin-bottom: 10px;
+}
+#nodeForm label {
+    font-weight: bold;
+    font-size: 18px;
+    color: darkseagreen;
+}
+#nodeForm input {
+    border-radius: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+#nodeForm input:focus { 
+    border-color: #32CD32;
+    box-shadow: 0 0 5px rgba(50, 205, 50, 0.5);
+}
+.content-map-node {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.btn.gradient-button {
+    background: linear-gradient(to right, #32CD32, #4CAF50);
+    color: white;
+    transition: background 0.3s ease-in-out;
+}
+.btn.gradient-button:hover {
+    background: linear-gradient(to right, #4CAF50, #32CD32);
+}
+
+.text-success {
+    color: #4CAF50 !important; /* Green color */
+}
+
+.fw-bold {
+    font-weight: bold;
+}
 
 form {
     background: rgb(228, 228, 228); 

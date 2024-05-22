@@ -1,0 +1,39 @@
+.card-slide {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    text-align: center;
+  }
+  
+  .card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .card p {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .custom-btn {
+    background-color: var(--btn-bg-color, #27a0e1); /* Couleur par défaut */
+    border-color: var(--btn-bg-color, #27a0e1);
+    color: #fff;
+    border-radius: 20px;
+    margin-bottom: auto;
+    margin-top: 35px;
+  }
+  
+  .custom-btn:hover {
+    background-color: var(--btn-hover-bg-color, #3578c5);
+    border-color: var(--btn-hover-bg-color, #3578c5);
+  }
+  
+  .ms-2 {
+    margin-left: 0.5rem;
+  }
+  
+

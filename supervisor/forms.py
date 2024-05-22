@@ -1,7 +1,11 @@
 from django                         import forms
 from client.models                  import Client
 from supervisor.models.project      import Project
+from supervisor.models.parcelle     import Parcelle
 from supervisor.models.localisation import Localisation
+from supervisor.models.node         import  Node
+from django.contrib.gis.geos        import Point
+from django.core.exceptions import ValidationError
 
 class ClientForm(forms.ModelForm):  
     password_confirmation = forms.CharField(
@@ -64,7 +68,6 @@ class ProjectForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'name': 'city',
             'class': 'form-control',
-            'onchange': 'updateMap()'  # Add this line to trigger JavaScript function
         })
     )
 
@@ -100,3 +103,88 @@ class ProjectForm(forms.ModelForm):
         # Handle the datetime-local input format for browser compatibility
         self.fields['date_debut'].input_formats = ('%Y-%m-%dT%H:%M',)
         self.fields['date_fin'].input_formats = ('%Y-%m-%dT%H:%M',)
+
+
+class ParcelleForm(forms.ModelForm):
+    project = forms.ModelChoiceField(
+        queryset=Project.objects.all(),
+        required=True,
+        empty_label='Select Project',
+        widget=forms.Select(attrs={
+            'name': 'project',
+            'class': 'form-control',
+            'id': 'id_project'
+        })
+    )
+    
+    class Meta:
+        model = Parcelle
+        fields = ['name', 'project']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ploygon Name',
+                'required': True,
+                'id': 'id_name_polygon'
+                }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['project'].widget.choices = [
+            (project.polygon_id, f"{project.name} (lat: {project.city.latitude}, lon: {project.city.longitude})", 
+             {'data-latitude': project.city.latitude, 'data-longitude': project.city.longitude})
+            for project in Project.objects.all() if project.city
+        ]
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if not name:
+            raise forms.ValidationError('This field is required.')
+        return name
+
+
+from django import forms
+from .models import Node, Parcelle
+from django.core.exceptions import ValidationError
+from django.contrib.gis.geos import Point
+
+class NodeForm(forms.ModelForm):
+    NODE_REFERENCE_CHOICES = [
+        ('IDeui-b770421e86700821', 'IDeui-b770421e86700821'),
+        ('IDeui-a835411eb0084141', 'IDeui-a835411eb0084141'),
+    ]
+
+    reference = forms.ChoiceField(
+        choices=NODE_REFERENCE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'nodeReference', 'style': 'height: calc(1.5em + .75rem + 3px);'})
+    )
+
+    class Meta:
+        model = Node
+        fields = ['name', 'reference', 'sensors', 'node_range', 'latitude', 'longitude', 'position', 'parcelle']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'nodeName', 'style': 'height: calc(1.5em + .75rem + 3px);'}),
+            'sensors': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'nodeSensors', 'style': 'height: calc(1.5em + .75rem + 3px);'}),
+            'node_range': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'nodeOrder', 'style': 'height: calc(1.5em + .75rem + 3px);'}),
+            'latitude': forms.HiddenInput(attrs={'id': 'id_latitude'}),
+            'longitude': forms.HiddenInput(attrs={'id': 'id_longitude'}),
+            'position': forms.HiddenInput(attrs={'id': 'nodePosition'}),
+            'parcelle': forms.HiddenInput(attrs={'id': 'id_parcelle'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        position = cleaned_data.get('position')
+        parcelle = cleaned_data.get('parcelle')
+        parcelle_id = parcelle.id if parcelle else None
+
+        if position and parcelle_id:
+            try:
+                parcelle = Parcelle.objects.get(id=parcelle_id)
+                point = Point(position.x, position.y)
+                if not parcelle.polygon.contains(point):
+                    raise ValidationError("The node must be placed inside the plot.")
+            except Parcelle.DoesNotExist:
+                raise ValidationError("Parcelle not found.")
+        return cleaned_data

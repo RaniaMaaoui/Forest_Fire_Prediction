@@ -7,7 +7,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('connect_as/', include('authentication.urls')),
-    path('dashboard_super/', include('supervisor.urls'))
+    path('dashboard_super/', include('supervisor.urls')),
+    path('dashboard_client/', include('client.urls')),
 ]
 
 if settings. DEBUG:

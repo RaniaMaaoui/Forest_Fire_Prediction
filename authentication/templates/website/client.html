@@ -11,36 +11,50 @@
         </div>
         <div class="login__forms">
             <!-- sign in -->
-            <form action="" class="login__register" id="login-in">
-            <h1 class="login__title">CLIENT</h1>
-            <div class="login__box">
-                <i class="bx bx-user login__icon"></i>
-                <input type="text" placeholder="Email" class="login__input" />
-            </div>
-            <div class="login__box">
-                <i class="bx bx-lock login__icon"></i>
-                <input
-                type="password"
-                placeholder="Password"
-                class="login__input"
-                />
-            </div>
-            <!-- <a href="#" class="login__forgot">Forgot password?</a> -->
-            <a href="" class="login__button">Login</a>
-            <div>
-                <!-- <span class="login__account">Don't have an Account?</span> -->
-                <a href="{% url 'supervisor_login' %}">
-                <span class="login__signin" id="sign-up">CONNECT AS SUPERVISOR</span>
-                </a>              
-            </div>
-            </form>
+            <form method="post" class="login__register" id="login-in" action="{% url 'client_login' %}">
+                {% csrf_token %}
+                <h1 class="login__title">CLIENT</h1>
+                <div class="login__box">
+                    <i class="bx bx-envelope login__icon"></i>
+                    {{ form_client.email }}
+                </div>
 
+                {% if form_client.email.errors %}
+                    <div class="text-danger" role="alert">{{ form_client.email.errors }}</div>
+                {% endif %}
+                {% if form_client.password.errors %}
+                    <div class="text-danger" role="alert">{{ form_client.password.errors }}</div>
+                {% endif %}
+                {% if form_client.non_field_errors %}
+                    <div class="text-danger" role="alert">{{ form_client.non_field_errors }}</div>
+                {% endif %}
+
+                <div class="login__box">
+                    <i class="bx bx-lock login__icon"></i>
+                    {{ form_client.password }}
+                </div>
+                <button type="submit" class="login__button" style="width: 100%; border: none; font-size: 15px;">Login</button>
+                <div>
+                    <a href="{% url 'supervisor_login' %}">
+                        <span class="login__signin" id="sign-up">CONNECT AS SUPERVISOR</span>
+                    </a>              
+                </div>
+            </form>
             </div>
         </div>
     </div>
 
     <!-- JAVASCRIPT -->
     <script src="{% static 'assets/js/main.js' %}"></script>
-
+    <script>
+        const emailInput = document.querySelector('#email');
+        emailInput.addEventListener('input', e => {
+            document.querySelectorAll('.errorlist').forEach(node => node.remove());
+        });
+        const passwordInput = document.querySelector('#password');
+        passwordInput.addEventListener('input', e => {
+            document.querySelectorAll('.errorlist').forEach(node => node.remove());
+        });
+    </script>
 
 {% endblock %}

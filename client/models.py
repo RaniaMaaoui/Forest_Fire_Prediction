@@ -1,35 +1,47 @@
-from django.db                      import models
-from django.contrib.auth.hashers    import make_password
-from django.core.exceptions         import ValidationError
-from django.core.mail               import send_mail
-from django.template.loader         import render_to_string
-from django.utils.html              import strip_tags
-from django.contrib.auth.models     import BaseUserManager
+from django.contrib.auth.models import User, BaseUserManager
+from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 class Client(models.Model):
-    firstName   = models.CharField(max_length=25, blank=True)
-    lastName    = models.CharField(max_length=25, blank=True)
-    email       = models.EmailField(max_length=255, unique=True)
-    phone       = models.CharField(max_length=12, blank=True)
-    username    = models.CharField(max_length=30)
-    password    = models.CharField(max_length=128)
-    image       = models.ImageField(null=True, blank = True, upload_to='img')
+    firstName = models.CharField(max_length=25, blank=True)
+    lastName = models.CharField(max_length=25, blank=True)
+    email = models.EmailField(max_length=255, unique=True)
+    phone = models.CharField(max_length=12, blank=True)
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=128)
+    image = models.ImageField(null=True, blank=True, upload_to='img')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.firstName} {self.lastName}'
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None  
-        if is_new or 'password':
-            self.password = make_password(self.password)
+        is_new = self.pk is None
+
+        if is_new:
+            if User.objects.filter(username=self.username).exists():
+                raise ValidationError(f"Username {self.username} already exists.")
+
+            # Générer un mot de passe sécurisé pour l'envoi
+            password = BaseUserManager().make_random_password()
+            hashed_password = make_password(password)
+            self.password = hashed_password
+
+            self.user = User.objects.create_user(username=self.username, email=self.email, password=hashed_password)
+        else:
+            if self.user:
+                self.user.username = self.username
+                self.user.email = self.email
+                self.user.set_password(self.password)
+                self.user.save()
+
         super().save(*args, **kwargs)
 
-        if is_new:  
-            #? Génération de mot de passe sécurisé pour l'envoi
-            password = BaseUserManager().make_random_password()
-            self.password = make_password(password)  #! Hash le mot de passe généré
-            self.save(update_fields=['password'])
-
+        if is_new:
             context = {'client': self, 'password': password}
             subject = 'Welcome to Smart For Green'
             html_message = render_to_string('message.html', context)
@@ -37,7 +49,6 @@ class Client(models.Model):
             from_email = 'From <mohamedhedigharbi101@gmail.com>'
             to = self.email
 
-            #? Envoi de l'email
             send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
     def clean(self):
