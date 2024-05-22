@@ -61,7 +61,7 @@
         <!--Nav Start-->
         <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar">
             <div class="container-fluid navbar-inner">
-            <a href="{% url 'dashboard_client' %}" class="navbar-brand">
+            <a href="{% url 'dashboard_client' project.polygon_id %}" class="navbar-brand">
                 <!--Logo start-->
                 <div class="logo-main">
                 <div class="logo-normal">
@@ -102,10 +102,14 @@
                 <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
                 <li class="nav-item dropdown">
                     <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{% static 'assets/images/avatars/me.jpg' %}" alt="User-Profile" style="width: 50px; border-radius: 50%;">
+                    {% if project.client.image %}
+                    <img src="{{ project.client.image.url }}" alt="User-Profile" style="width: 50px; border-radius: 50%;">
+                    {% else %}
+                        <img src="{% static 'assets/images/default-avatar.jpg' %}" alt="User-Profile" style="width: 50px; border-radius: 50%;">
+                    {% endif %}
                     <div class="caption ms-3 d-none d-md-block">
-                        <h6 class="mb-0 caption-title">Mohamed Hedi Gharbi</h6>
-                        <p class="mb-0 caption-sub-title">Farm Awled Bachir</p>
+                        <h6 class="mb-0 caption-title">{{ project.client.firstName }} {{ project.client.lastName }}</h6>
+                        <p class="mb-0 caption-sub-title">{{ project.name }}</p>
                     </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -156,8 +160,10 @@
                         <p>Ref: eui-70b3d57ed005c92e</p>
                         <p>Node ID: 24</p>
                         <div class="d-flex justify-content-between">
-                        <button class="btn btn-success custom-btn">Locate</button>
-                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                            <button class="btn btn-success custom-btn">Locate</button>
+                            <a href="{% url 'node_detail' project_id=project.polygon_id %}">
+                                <button class="btn btn-success custom-btn ms-2">Details</button>
+                            </a>
                         </div>
                     </div>
                     </li>
@@ -167,8 +173,10 @@
                         <p>Ref: eui-70b3d57ed005a5c4</p>
                         <p>Node ID: 23</p>
                         <div class="d-flex justify-content-between">
-                        <button class="btn btn-success custom-btn">Locate</button>
-                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                            <button class="btn btn-success custom-btn">Locate</button>
+                            <a href="{% url 'node_detail' project_id=project.polygon_id %}">
+                                <button class="btn btn-success custom-btn ms-2">Details</button>
+                            </a>
                         </div>
                     </div>
                     </li>
@@ -178,8 +186,10 @@
                         <p>Ref: eui-70b3d57ed005c92e</p>
                         <p>Node ID: 22</p>
                         <div class="d-flex justify-content-between">
-                        <button class="btn btn-success custom-btn">Locate</button>
-                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                            <button class="btn btn-success custom-btn">Locate</button>
+                            <a href="{% url 'node_detail' project_id=project.polygon_id %}">
+                                <button class="btn btn-success custom-btn ms-2">Details</button>
+                            </a>
                         </div>
                     </div>
                     </li>
@@ -189,8 +199,10 @@
                         <p>Ref: eui-70b3d57ed005a5c4</p>
                         <p>Node ID: 21</p>
                         <div class="d-flex justify-content-between">
-                        <button class="btn btn-success custom-btn">Locate</button>
-                        <button class="btn btn-success custom-btn ms-2">Details</button>
+                            <button class="btn btn-success custom-btn">Locate</button>
+                            <a href="{% url 'node_detail' project_id=project.polygon_id %}">
+                                <button class="btn btn-success custom-btn ms-2">Details</button>
+                            </a>
                         </div>
                     </div>
                     </li>

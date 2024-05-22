@@ -18,7 +18,7 @@ def client_login(request):
                 client = Client.objects.get(email=email)
                 if check_password(password, client.password):
                     login(request, client.user)
-                    next_url = request.POST.get('next', 'dashboard_client')
+                    next_url = request.POST.get('next', 'select_project_of_project')
                     return redirect(next_url)
                 else:
                     form_client.add_error(None, "Invalid email or password!!!")
