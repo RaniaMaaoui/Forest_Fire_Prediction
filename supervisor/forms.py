@@ -143,16 +143,10 @@ class ParcelleForm(forms.ModelForm):
             raise forms.ValidationError('This field is required.')
         return name
 
-
-from django import forms
-from .models import Node, Parcelle
-from django.core.exceptions import ValidationError
-from django.contrib.gis.geos import Point
-
 class NodeForm(forms.ModelForm):
     NODE_REFERENCE_CHOICES = [
-        ('IDeui-b770421e86700821', 'IDeui-b770421e86700821'),
-        ('IDeui-a835411eb0084141', 'IDeui-a835411eb0084141'),
+        ('1:eui-b770421e86700821', '1:eui-b770421e86700821'),
+        ('2:eui-a835411eb0084141', '2:eui-a835411eb0084141'),
     ]
 
     reference = forms.ChoiceField(
@@ -178,11 +172,12 @@ class NodeForm(forms.ModelForm):
         position = cleaned_data.get('position')
         parcelle = cleaned_data.get('parcelle')
         parcelle_id = parcelle.id if parcelle else None
-
+        
         if position and parcelle_id:
             try:
                 parcelle = Parcelle.objects.get(id=parcelle_id)
-                point = Point(position.x, position.y)
+                point = Point(position.y, position.x)
+                print(point, parcelle.polygon)
                 if not parcelle.polygon.contains(point):
                     raise ValidationError("The node must be placed inside the plot.")
             except Parcelle.DoesNotExist:

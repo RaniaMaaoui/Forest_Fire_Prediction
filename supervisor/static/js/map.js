@@ -147,11 +147,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             keyboard: false
                         });
                         displayParcelsModal.show();
-
+                        
                         // Update the hidden field with the new parcel ID
                         const lastParcelle = data.parcels[data.parcels.length - 1];
                         if (lastParcelle) {
-                            document.getElementById('id_parcelle').value = lastParcelle.id;
+                            document.getElementById('id_parcelle').setAttribute("parcelle-id", lastParcelle.id) 
                         } else {
                             console.error('No parcels returned from the server.');
                         }
@@ -265,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                     parcelleField.value = parcelleValue;
-                    console.log('Assigned Parcelle Value:', parcelleValue); // Debug: Log the assigned parcelle value
                 }
                 console.log(`Updated Position: ${positionField.value}, Latitude: ${latitudeField.value}, Longitude: ${longitudeField.value}, Parcelle: ${parcelleField.value}`);  // Debug: Afficher les valeurs mises à jour
             }
@@ -278,6 +277,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nodeSensors = document.getElementById('nodeSensors');
                     const nodeOrder = document.getElementById('nodeOrder');
                     const parcelleInput = document.getElementById('id_parcelle');
+
+                    
 
                     if (!nameInput || !nodeReference || !nodeSensors || !nodeOrder || !parcelleInput) {
                         console.error('Required input fields are missing.');
@@ -300,6 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     let isInsideAnyParcelle = false;
                     drawnItemsPolygon.getLayers().forEach(function(polygonLayer) {
+                        
                         if (polygonLayer.getBounds().contains(coordinates)) {
                             isInsideAnyParcelle = true;
                             if (polygonLayer.feature && polygonLayer.feature.properties) {
@@ -312,9 +314,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert('Marker must be placed inside a parcel.');
                         return;
                     }
-
+                    console.log(parcelleInput);
                     // Vérifiez que le champ parcelle n'est pas vide
-                    if (!parcelleInput.value) {
+                    if (!parcelleInput.getAttribute("parcelle-id")) {
                         alert('Parcelle must not be empty.');
                         return;
                     }
@@ -332,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                         },
-                        body: `name=${encodeURIComponent(nameValue)}&reference=${encodeURIComponent(nodeReferenceValue)}&sensors=${encodeURIComponent(nodeSensorsValue)}&node_range=${encodeURIComponent(nodeOrderValue)}&position=POINT(${coordinates.lng.toFixed(6)} ${coordinates.lat.toFixed(6)})&latitude=${coordinates.lat.toFixed(6)}&longitude=${coordinates.lng.toFixed(6)}&parcelle=${encodeURIComponent(parcelleInput.value)}`
+                        body: `name=${encodeURIComponent(nameValue)}&reference=${encodeURIComponent(nodeReferenceValue)}&sensors=${encodeURIComponent(nodeSensorsValue)}&node_range=${encodeURIComponent(nodeOrderValue)}&position=POINT(${coordinates.lng.toFixed(6)} ${coordinates.lat.toFixed(6)})&latitude=${coordinates.lat.toFixed(6)}&longitude=${coordinates.lng.toFixed(6)}&parcelle=${encodeURIComponent(parcelleInput.getAttribute("parcelle-id"))}`
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -376,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (projectSelect) {
-            const initialProjectId = projectSelect.options[projectSelect.selectedIndex].value;
+            const initialProjectId = projectSelect.options[projectSelect.selectedIndex]?.value;
             if (initialProjectId) {
                 fetchParcellesForProject(initialProjectId);
             }

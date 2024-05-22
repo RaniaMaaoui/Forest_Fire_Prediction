@@ -4,7 +4,7 @@ from django.http                        import JsonResponse
 from .forms                             import SelectProjectForm
 from supervisor.models.project          import Project
 from supervisor.models.parcelle         import Parcelle
-
+from supervisor.models.node             import Node
 
 @login_required(login_url='client_login')
 def index1(request, project_id):
@@ -49,11 +49,23 @@ def fetch_parcelles_for_project(request):
 
     project = get_object_or_404(Project, polygon_id=project_id, client=request.user.client)
     parcelles = Parcelle.objects.filter(project=project)
-    parcelle_data = [{
-        'id': parcelle.id,
-        'name': parcelle.name,
-        'coordinates': list(parcelle.polygon.coords[0])
-    } for parcelle in parcelles]
+    parcelle_data = []
+
+    for parcelle in parcelles:
+        nodes = Node.objects.filter(parcelle=parcelle)
+        node_data = [{
+            'id': node.id,
+            'name': node.name,
+            'latitude': node.position.x,  
+            'longitude': node.position.y  
+        } for node in nodes]
+        
+        parcelle_data.append({
+            'id': parcelle.id,
+            'name': parcelle.name,
+            'coordinates': list(parcelle.polygon.coords[0]),
+            'nodes': node_data
+        })
     
     city_data = {
         'localite_libelle': project.city.localite_libelle,

@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+
             let defaultLat = 0;
             let defaultLng = 0;
 
@@ -31,6 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     const polygon = L.polygon(parcelle.coordinates);
                     polygon.addTo(map);
                     bounds.push(...parcelle.coordinates);
+
+                    // Display nodes for each parcel
+                    parcelle.nodes.forEach(node => {
+                        const marker = L.marker([node.latitude, node.longitude]);
+                        marker.bindPopup(`<b>${node.name}</b>`);
+                        marker.addTo(map);
+                    });
                 });
                 map.fitBounds(bounds);
             } else {

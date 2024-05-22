@@ -208,11 +208,11 @@ def get_parcelles_for_project(request):
 @login_required(login_url='supervisor_login')
 def node_create(request):
     if request.method == 'POST':
-        form = NodeForm(request.POST)
+        node_form = NodeForm(request.POST)
         # print(request.POST)  # Affiche les données POST reçues
 
-        if form.is_valid():
-            print('hello')  # Debug: Vérifier si le formulaire est valide
+        if node_form.is_valid():
+            print('hello')  
             coordinates_data = request.POST.get('position')
             parcelle_id = request.POST.get('parcelle')
             try:
@@ -220,13 +220,13 @@ def node_create(request):
                 coordinates = coordinates_data.strip('POINT()').split()
                 longitude = float(coordinates[0])
                 latitude = float(coordinates[1])
-                point = Point(longitude, latitude)
+                point = Point(latitude, longitude)
 
                 parcelle = get_object_or_404(Parcelle, id=parcelle_id)
 
                 # Vérifier si le point est à l'intérieur du polygone de la parcelle
                 if parcelle.polygon.contains(point):
-                    node = form.save(commit=False)
+                    node = node_form.save(commit=False)
                     node.position = point
                     node.latitude = latitude
                     node.longitude = longitude
@@ -247,7 +247,7 @@ def node_create(request):
                 return JsonResponse({'error': {'coordinates': [{'message': 'Invalid coordinates format.', 'code': 'invalid'}]}}, status=400)
         else:
             # Afficher les erreurs de validation du formulaire
-            errors = form.errors.as_json()
+            errors = node_form.errors.as_json()
             print('Form errors:', errors)  # Debug: Affiche les erreurs du formulaire
             return JsonResponse({'error': errors}, status=400)
     else:
