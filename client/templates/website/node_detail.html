@@ -32,7 +32,6 @@
         text-align: left;
         }
 
-
         .node-info-card .card-body p {
             margin: 10px 0;
             font-size: 16px;
@@ -49,9 +48,6 @@
             flex-grow: 1;
             text-align: right;
         }
-
-
-
 
         .weather-info-card {
             border: 1px solid #dee2e6;
@@ -239,115 +235,111 @@
             <!-- Nav Header Component End -->
         </div>
 
-        <div class="conatiner-fluid content-inner mt-n5 py-0">
+        <div class="container-fluid content-inner mt-n5 py-0">
             <div class="row">
-            <div class="col-md-12 col-lg-8">
-                <div class="row">
-                <div class="col-md-12">
-                    <div class="card" data-aos="fade-up" data-aos-delay="800">
-                    <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
-                        <canvas id="temperatureChart" width="400" height="200"></canvas>
-                    </div>
+                <div class="col-md-12 col-lg-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card" data-aos="fade-up" data-aos-delay="800">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                    <canvas id="temperatureChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="card" data-aos="fade-up" data-aos-delay="850">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                    <canvas id="humidityChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="card" data-aos="fade-up" data-aos-delay="900">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                    <canvas id="gasChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="card" data-aos="fade-up" data-aos-delay="850">
-                    <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
-                        <canvas id="humidityChart" width="400" height="200"></canvas>
-                    </div>
+                <div class="col-md-12 col-lg-4">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card credit-card-widget" data-aos="fade-up" data-aos-delay="900">
+                                <div class="pb-4 border-0 card-header">
+                                    <div class="node-info-card">
+                                        <div class="card-header">
+                                            <i class="fas fa-info-circle"></i> Node Information
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Node Name:</strong> <span id="nodeName">{{ node.name }}</span></p>
+                                            <p><strong>Reference:</strong> <span id="nodeReference">{{ node.ref }}</span></p>
+                                            <p><strong>Position:</strong> <span id="nodePosition">{{ node.latitude }}, {{ node.longitude }}</span></p>
+                                            <p><strong>Sensors:</strong> <span id="nodeSensors">{{ node.sensors }}</span></p>
+                                            <p><strong>Duty Cycle:</strong> <span id="nodeDutyCycle">{{ node.duty_cycle }}</span></p>
+                                            <p><strong>RSSI:</strong> <span id="nodeRSSI">{{ node.RSSI }}</span></p>
+                                            <p><strong>Battery Level:</strong> <span id="nodeBatteryLevel">{{ node.battery_level }}</span></p>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card" data-aos="fade-up" data-aos-delay="900">
+                                <div class="flex-wrap card-header d-flex justify-content-between">
+                                    <div class="weather-info-card">
+                                        <div class="card-header">
+                                            <i class="fas fa-cloud"></i> Weather Information
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Temperature:</strong> 26°C</p>
+                                            <p><strong>Humidity:</strong> 61%</p>
+                                            <p><strong>Pressure:</strong> 100 hPa</p>
+                                            <p><strong>Gas Concentration:</strong> 24 ppm</p>
+                                            <p><strong>Wind Speed:</strong> 2.57 km/h</p>
+                                            <p><strong>Rain Volume:</strong> 0.0 mm</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card" data-aos="fade-up" data-aos-delay="1000">
+                                <div class="flex-wrap card-header d-flex justify-content-between">
+                                    <div class="prediction-info-card">
+                                        <div class="card-header">
+                                            <i class="fas fa-bell"></i> Prediction
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>FM:</strong> 3.3</p>
+                                            <p>Status: <span>OK</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="card" data-aos="fade-up" data-aos-delay="900">
-                    <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
-                        <canvas id="gasChart" width="400" height="200"></canvas>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="col-md-12 col-lg-4">
-                <div class="row">
-                <div class="col-md-12 col-lg-12">
-                    <div class="card credit-card-widget" data-aos="fade-up" data-aos-delay="900">
-                    <div class="pb-4 border-0 card-header">
-                        <div class="node-info-card">
-                        <div class="card-header">
-                            <i class="fas fa-info-circle"></i> Node Information
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Node Name:</strong> <span>node N1</span></p>
-                            <p><strong>Reference:</strong> <span>eui-70b3d57ed005a5c4</span></p>
-                            <p><strong>Position:</strong> <span>37.232576, 37.232576</span></p>
-                            <p><strong>Sensors:</strong> <span>BME688</span></p>
-                            <p><strong>Duty Cycle:</strong> <span>Every 1 Min</span></p>
-                            <p><strong>RSSI:</strong> <span>-41</span></p>
-                            <p><strong>Battery Level:</strong> <span>55</span></p>
-                        </div>
-                        </div>
-                    </div>
-                    </div> 
-                </div>
-                <div class="col-md-12 col-lg-12">
-                    <div class="card" data-aos="fade-up" data-aos-delay="900">
-                    <div class="flex-wrap card-header d-flex justify-content-between">
-                        <div class="weather-info-card">
-                        <div class="card-header">
-                            <i class="fas fa-cloud"></i> Weather Information
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Temperature:</strong> 26°C</p>
-                            <p><strong>Humidity:</strong> 61%</p>
-                            <p><strong>Pressure:</strong> 100 hPa</p>
-                            <p><strong>Gas Concentartion:</strong> 24 ppm</p>
-                            <p><strong>Wind Speed:</strong> 2.57 km/h</p>
-                            <p><strong>Rain Volume:</strong> 0.0 mm</p>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-12">
-                    <div class="card" data-aos="fade-up" data-aos-delay="1000">
-                    <div class="flex-wrap card-header d-flex justify-content-between">
-                        <div class="prediction-info-card">
-                        <div class="card-header">
-                            <i class="fas fa-bell"></i> Prediction
-                        </div>
-                        <div class="card-body">
-                            <p><strong>FM:</strong> 3.3</p>
-                            <p>Status: <span>OK</span></p>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
             </div>
         </div>
 
         <!-- Footer Section Start -->
         <footer class="footer">
             <div class="footer-body">
-            <ul class="left-panel list-inline mb-0 p-0">
-                <li class="list-inline-item"><a href="">Smart For Green</a></li>
-            </ul>
-            <div class="right-panel">
-                ©<script>document.write(new Date().getFullYear())</script> Designed By <a href="">Mohamed Hedi Gharbi</a>.
-            </div>
+                <ul class="left-panel list-inline mb-0 p-0">
+                    <li class="list-inline-item"><a href="">Smart For Green</a></li>
+                </ul>
+                <div class="right-panel">
+                    ©<script>document.write(new Date().getFullYear())</script> Designed By 
+                    <a href="">Mohamed Hedi Gharbi</a>.
+                </div>
             </div>
         </footer>
         <!-- Footer Section End -->
     </main>
     <!-- Main Content End -->
 
-
 {% endblock %}
 
-
 {% block scripts %}
-
-
-
 {% endblock %}

@@ -162,7 +162,9 @@
                 <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 90%; max-height: 300%;">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: 300%;">
                         <div class="modal-header">
-                            <h4 class="modal-title text-success fw-bold" id="projectFormModalLabel">Draw plots project:{{project.name}} of client:</h4>
+                            <h4 class="modal-title text-success fw-bold" id="projectFormModalLabel">
+                                Draw plots project: {{ project_name }} of client: {{ client_name }}
+                            </h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeDisplayParcelsModal"></button>
                         </div>
                         <div class="modal-body">
@@ -192,7 +194,12 @@
                                             <label for="project">Project:</label>
                                             <select id="id_project" class="form-control">
                                                 {% for project in parcelle_form.fields.project.queryset %}
-                                                    <option value="{{ project.polygon_id }}" data-latitude="{{ project.city.latitude }}" data-longitude="{{ project.city.longitude }}">{{ project.name }}</option>
+                                                    <option value="{{ project.polygon_id }}" 
+                                                            data-latitude="{{ project.city.latitude }}" 
+                                                            data-longitude="{{ project.city.longitude }}" 
+                                                            data-client-name="{{ project.client.firstName }} {{ project.client.lastName }}">
+                                                        {{ project.name }}
+                                                    </option>
                                                 {% endfor %}
                                             </select>
                                         </div>
@@ -206,7 +213,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>            
             <!-- Map Form Modal End -->
 
             <!-- Display Parcels Modal Start -->
@@ -225,6 +232,7 @@
                                         <div class="form-group">
                                             <label for="nodeName">Node Name:</label>
                                             {{ node_form.name }}
+                                            <div id="nameAlert" class="alert-form alert-danger-form mt-2 d-none" role="alert"></div>
                                             {{ node_form.errors.name }}
                                         </div>
                                     </div>
@@ -232,6 +240,7 @@
                                         <div class="form-group">
                                             <label for="nodeReference">Node Reference:</label>
                                             {{ node_form.reference }}
+                                            <div id="referenceAlert" class="alert-form alert-danger-form mt-2 d-none" role="alert"></div>
                                             {{ node_form.errors.reference }}
                                         </div>
                                     </div>
@@ -239,6 +248,7 @@
                                         <div class="form-group">
                                             <label for="nodeSensors">Node sensors:</label>
                                             {{ node_form.sensors }}
+                                            <div id="sensorsAlert" class="alert-form alert-danger-form mt-2 d-none" role="alert"></div>
                                             {{ node_form.errors.sensors }}
                                         </div>
                                     </div>
@@ -246,6 +256,7 @@
                                         <div class="form-group">
                                             <label for="nodeOrder">Node order:</label>
                                             {{ node_form.node_range }}
+                                            <div id="orderAlert" class="alert-form alert-danger-form mt-2 d-none" role="alert"></div>
                                             {{ node_form.errors.node_range }}
                                         </div>
                                     </div>
@@ -266,6 +277,8 @@
                 </div>
             </div>
             <!-- Display Parcels Modal End -->
+
+
 
 
 

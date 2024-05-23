@@ -33,16 +33,19 @@ def list_project(request):
 def add_project(request):
     form = ProjectForm(request.POST or None, request.FILES or None)
     data = {'latitude': None, 'longitude': None}
+    client_name = None
+    project_name = None
 
     if request.method == 'POST':
         if form.is_valid():
-            #! Vérifiez si un projet avec le même nom et la même ville existe déjà
-            project_name = form.cleaned_data['name']
-            project_city = form.cleaned_data['city']
-            existing_project = Project.objects.filter(name=project_name, city=project_city).first()
+            project = form.save(commit=False)
+            project_name = project.name
+            client_name = f"{project.client.firstName} {project.client.lastName}"
+
+            # Vérifiez si un projet avec le même nom et la même ville existe déjà
+            existing_project = Project.objects.filter(name=project_name, city=project.city).first()
 
             if existing_project:
-                #? Mettre à jour le projet existant
                 existing_project.descp = form.cleaned_data.get('descp', existing_project.descp)
                 existing_project.date_debut = form.cleaned_data.get('date_debut', existing_project.date_debut)
                 existing_project.date_fin = form.cleaned_data.get('date_fin', existing_project.date_fin)
@@ -51,8 +54,6 @@ def add_project(request):
                 messages.success(request, 'Project updated successfully.')
                 project = existing_project
             else:
-                # Créer un nouveau projet
-                project = form.save(commit=False)
                 project.save()
                 form.save_m2m()
                 messages.success(request, 'Project added successfully.')
@@ -69,27 +70,44 @@ def add_project(request):
                 'show_map_modal': True,
                 'data': data,
                 'parcelle_form': parcelle_form,
-                'node_form': node_form
+                'node_form': node_form,
+                'project_name': project_name,
+                'client_name': client_name
             })
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ProjectForm()
 
-    #* Charger les données de la session si elles existent
     if 'map_data' in request.session:
         data = request.session['map_data']
 
-    show_map_modal = request.session.get('project_added', False)  # Read without removing
-    response = render(request, 'website/project.html', {'form': form, 'show_map_modal': show_map_modal, 'data': data})
+    show_map_modal = request.session.get('project_added', False)
+    response = render(request, 'website/project.html', {
+        'form': form,
+        'show_map_modal': show_map_modal,
+        'data': data,
+        'project_name': project_name,
+        'client_name': client_name
+    })
 
-    #! Reset session variables after rendering the response
     request.session['project_added'] = False
     request.session['map_data'] = None
 
     return response
 
 
+@login_required(login_url='supervisor_login')
+def get_project_details(request, project_id):
+    try:
+        project = Project.objects.get(pk=project_id)
+        data = {
+            'project_name': project.name,
+            'client_name': f"{project.client.firstName} {project.client.lastName}",
+        }
+        return JsonResponse(data)
+    except Project.DoesNotExist:
+        return JsonResponse({'error': 'Project not found'}, status=404)
 
 @login_required(login_url='supervisor_login')
 def update_project(request, project_id):
@@ -253,3 +271,30 @@ def node_create(request):
     else:
         node_form = NodeForm()
         return render(request, 'website/project.html', {'node_form': node_form})
+    
+
+
+@login_required(login_url='supervisor_login')
+def get_parcelles_with_nodes_for_project(request):
+    project_id = request.GET.get('project_id')
+    if project_id:
+        parcelles = Parcelle.objects.filter(project_id=project_id)
+        parcelle_data = []
+        for parcelle in parcelles:
+            nodes = Node.objects.filter(parcelle=parcelle)
+            node_data = [{
+                'id': node.id,
+                'name': node.name,
+                'latitude': node.position.x,
+                'longitude': node.position.y,
+                'ref': node.reference
+            } for node in nodes]
+            parcelle_data.append({
+                'id': parcelle.id,
+                'name': parcelle.name,
+                'coordinates': list(parcelle.polygon.coords[0]),
+                'nodes': node_data
+            })
+        return JsonResponse({'parcelles': parcelle_data}, status=200)
+    else:
+        return JsonResponse({'error': 'No project ID provided.'}, status=400)

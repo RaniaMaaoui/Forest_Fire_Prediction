@@ -22,6 +22,8 @@ urlpatterns = [
 
  #######* Node Related  ##########
     path('add_node/', views.node_create, name='add_node'),
+    path('get_parcelles_with_nodes_for_project/', views.get_parcelles_with_nodes_for_project, name='get_parcelles_with_nodes_for_project'),
+    path('get_project_details/<int:project_id>/', views.get_project_details, name='get_project_details'),
     path('noeuds_list/', views.noeuds, name='noeuds'),
 ]
 

@@ -48,20 +48,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const projectSelect = document.getElementById('id_project');
+        const modalTitle = document.getElementById('displayParcelsModalLabel');
+        const modalTitle1 = document.getElementById('projectFormModalLabel');
+
+        function updateModalTitles(projectName, clientName) {
+            modalTitle.textContent = `ADD NODE TO YOUR PROJECT: ${projectName}`;
+            modalTitle1.textContent = `Draw plots project: ${projectName} of client: ${clientName}`;
+        }
+
         if (projectSelect) {
             projectSelect.addEventListener('change', function() {
+                const projectId = projectSelect.value;
+                fetch(`/dashboard_super/get_project_details/${projectId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.error) {
+                            console.error(data.error);
+                        } else {
+                            const projectName = data.project_name;
+                            const clientName = data.client_name;
+                            updateModalTitles(projectName, clientName);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+    
                 const selectedOption = projectSelect.options[projectSelect.selectedIndex];
                 const latitude = parseFloat(selectedOption.getAttribute('data-latitude'));
                 const longitude = parseFloat(selectedOption.getAttribute('data-longitude'));
-
+    
                 if (!isNaN(latitude) && !isNaN(longitude)) {
                     map.setView([latitude, longitude], 15);
                 }
-
+    
                 // Fetch and display parcels
                 fetchParcellesForProject(selectedOption.value);
             });
+    
+            // Set initial modal title if a project is already selected
+            const initialProjectOption = projectSelect.options[projectSelect.selectedIndex];
+            if (initialProjectOption) {
+                const projectName = initialProjectOption.textContent.trim();
+                const clientName = initialProjectOption.getAttribute('data-client-name');
+                updateModalTitles(projectName, clientName);
+            }
         }
+        
 
         let drawnItemsPolygon = new L.FeatureGroup();
         map.addLayer(drawnItemsPolygon);
@@ -89,14 +121,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Function to fetch and display parcels for the selected project
         function fetchParcellesForProject(projectId) {
             fetch(`/dashboard_super/get_parcelles_for_project/?project_id=${projectId}`)
-                .then(response => response.json())
+                .then(response => {
+                    return response.json();
+                })
                 .then(data => {
                     drawnItemsPolygon.clearLayers();
-                    data.parcelles.forEach(parcelle => {
-                        const polygon = L.polygon(parcelle.coordinates);
-                        polygon.feature = { properties: { id: parcelle.id } };  // Attach the id to the feature properties
-                        drawnItemsPolygon.addLayer(polygon);
-                    });
+                    if (data.parcelles.length > 0) {
+                        const bounds = [];
+                        data.parcelles.forEach(parcelle => {
+                            if (Array.isArray(parcelle.coordinates) && parcelle.coordinates.length > 0) {
+                                const polygon = L.polygon(parcelle.coordinates);
+                                polygon.feature = { properties: { id: parcelle.id } };
+                                drawnItemsPolygon.addLayer(polygon);
+                                bounds.push(...parcelle.coordinates);
+                            } else {
+                                console.error(`Invalid coordinates for parcelle ID: ${parcelle.id}`, parcelle.coordinates);
+                            }
+                        });
+                        map.fitBounds(bounds);
+                    } else {
+                        console.log('No parcels found for this project.');
+                    }
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -156,8 +201,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             console.error('No parcels returned from the server.');
                         }
 
-                        // Optionally, load parcels on the display map
-                        loadParcelsOnDisplayMap(data.parcels);
+                        // Load parcels with nodes on the display map
+                        loadParcelsOnDisplayMap(projectId);
                     } else if (data.error) {
                         // Show error messages
                         if (data.error.name) {
@@ -178,20 +223,41 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Load parcels on the display map
-        function loadParcelsOnDisplayMap(parcels) {
+        // Load parcels with nodes on the display map
+        function loadParcelsOnDisplayMap(projectId) {
             const displayMap = L.map("displayMap", {
-                center: map.getCenter(),
-                zoom: map.getZoom(),
+                center: [latitude, longitude],
+                zoom: 15,
             });
 
             L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(displayMap);
 
-            parcels.forEach(parcelle => {
-                const polygon = L.polygon(parcelle.coordinates);
-                polygon.feature = { properties: { id: parcelle.id } };  // Attach the id to the feature properties
-                polygon.addTo(displayMap);
-            });
+            fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.parcelles && data.parcelles.length > 0) {
+                        const bounds = [];
+                        data.parcelles.forEach(parcelle => {
+                            const polygon = L.polygon(parcelle.coordinates);
+                            polygon.feature = { properties: { id: parcelle.id } };
+                            polygon.addTo(displayMap);
+                            bounds.push(...parcelle.coordinates);
+
+                            parcelle.nodes.forEach(node => {
+                                const marker = L.marker([node.latitude, node.longitude]);
+                                marker.bindPopup(
+                                    `<b>Name:</b> ${node.name}<br>
+                                     <b>Ref:</b> ${node.ref}`
+                                );
+                                marker.addTo(displayMap);
+                            });
+                        });
+                        displayMap.fitBounds(bounds);
+                    } else {
+                        console.log("No parcels found for this project.");
+                    }
+                })
+                .catch(error => console.error('Error fetching parcels:', error));
 
             let drawnItemsMarker = new L.FeatureGroup();
             displayMap.addLayer(drawnItemsMarker);
@@ -278,8 +344,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nodeOrder = document.getElementById('nodeOrder');
                     const parcelleInput = document.getElementById('id_parcelle');
 
-                    
-
                     if (!nameInput || !nodeReference || !nodeSensors || !nodeOrder || !parcelleInput) {
                         console.error('Required input fields are missing.');
                         return;
@@ -301,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     let isInsideAnyParcelle = false;
                     drawnItemsPolygon.getLayers().forEach(function(polygonLayer) {
-                        
                         if (polygonLayer.getBounds().contains(coordinates)) {
                             isInsideAnyParcelle = true;
                             if (polygonLayer.feature && polygonLayer.feature.properties) {
@@ -314,12 +377,54 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert('Marker must be placed inside a parcel.');
                         return;
                     }
-                    console.log(parcelleInput);
+
                     // Vérifiez que le champ parcelle n'est pas vide
                     if (!parcelleInput.getAttribute("parcelle-id")) {
                         alert('Parcelle must not be empty.');
                         return;
                     }
+
+// Vérification des champs obligatoires
+                let isValid = true;
+                let errorMessage = "Form errors: {";
+
+                if (!nameInput.value) {
+                    showAlert('Name is required.', 'nameAlert');
+                    errorMessage += `"name": [{"message": "Name is required.", "code": "required"}], `;
+                    isValid = false;
+                } else {
+                    hideAlert('nameAlert');
+                }
+
+                if (!nodeReference.value) {
+                    showAlert('Reference is required.', 'referenceAlert');
+                    errorMessage += `"reference": [{"message": "Reference is required.", "code": "required"}], `;
+                    isValid = false;
+                } else {
+                    hideAlert('referenceAlert');
+                }
+
+                if (!nodeSensors.value) {
+                    showAlert('Sensors is required.', 'sensorsAlert');
+                    errorMessage += `"sensors": [{"message": "Sensors is required.", "code": "required"}], `;
+                    isValid = false;
+                } else {
+                    hideAlert('sensorsAlert');
+                }
+
+                if (!nodeOrder.value) {
+                    showAlert('Order is required.', 'orderAlert');
+                    errorMessage += `"node_range": [{"message": "Order is required.", "code": "required"}], `;
+                    isValid = false;
+                } else {
+                    hideAlert('orderAlert');
+                }
+
+                if (!isValid) {
+                    errorMessage = errorMessage.slice(0, -2) + "}";
+                    showGlobalAlert(errorMessage);
+                    return; // Arrête l'exécution si un champ est manquant
+                }
 
                     // Update hidden fields with the correct values
                     document.getElementById('nodePosition').value = `POINT(${coordinates.lng.toFixed(6)} ${coordinates.lat.toFixed(6)})`;
@@ -354,6 +459,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         }
+
+        function showAlert(message, alertId) {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                alertElement.textContent = message;
+                alertElement.classList.remove('d-none');
+            }
+        }
+
+        function hideAlert(alertId) {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                alertElement.classList.add('d-none');
+            }
+        }
+
+        const inputs = ['nodeName', 'nodeReference', 'nodeSensors', 'nodeOrder'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        const alertId = id.replace('node', '').toLowerCase() + 'Alert';
+                        hideAlert(alertId);
+                        hideGlobalAlert();
+                    });
+                }
+            });
 
         const closeDisplayParcelsModalButton = document.getElementById('closeDisplayParcelsModal');
         if (closeDisplayParcelsModalButton) {

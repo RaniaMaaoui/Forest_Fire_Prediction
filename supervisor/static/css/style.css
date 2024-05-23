@@ -668,6 +668,24 @@ form {
 }
 
 
+.alert-fom {
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.alert-danger-form {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-danger-form.show {
+    display: block;
+}
+
+
 /* Responsive design pour les appareils mobiles */
 @media (max-width: 768px) {
     .row-map {

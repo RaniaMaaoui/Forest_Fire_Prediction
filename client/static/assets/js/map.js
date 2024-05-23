@@ -36,7 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Display nodes for each parcel
                     parcelle.nodes.forEach(node => {
                         const marker = L.marker([node.latitude, node.longitude]);
-                        marker.bindPopup(`<b>${node.name}</b>`);
+                        marker.bindPopup(
+                            `   <b>Name:</b>${node.name}<br>
+                                <b>Ref:</b>${node.ref}
+                            `);
                         marker.addTo(map);
                     });
                 });
