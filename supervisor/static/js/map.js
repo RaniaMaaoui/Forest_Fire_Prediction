@@ -50,10 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const projectSelect = document.getElementById('id_project');
         const modalTitle = document.getElementById('displayParcelsModalLabel');
         const modalTitle1 = document.getElementById('projectFormModalLabel');
+        const modalTitle2 = document.getElementById('customDisplayParcelsModalLabel')
 
         function updateModalTitles(projectName, clientName) {
-            modalTitle.textContent = `ADD NODE TO YOUR PROJECT: ${projectName}`;
-            modalTitle1.textContent = `Draw plots project: ${projectName} of client: ${clientName}`;
+            const projectNameSpan = `<span style="color: black;">${projectName}</span>`;
+            const clientNameSpan = `<span style="color: black;">${clientName}</span>`;
+
+            modalTitle.innerHTML  = `ADD NODE TO YOUR PROJECT: ${projectNameSpan}`;
+            modalTitle1.innerHTML  = `Draw plots project: ${projectNameSpan} of client: ${clientNameSpan}`;
+            modalTitle2.innerHTML  = `LAST NODE ADDED OF PROJECT:${projectNameSpan}`
         }
 
         if (projectSelect) {
@@ -72,19 +77,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     })
                     .catch(error => console.error('Error:', error));
-    
+
                 const selectedOption = projectSelect.options[projectSelect.selectedIndex];
                 const latitude = parseFloat(selectedOption.getAttribute('data-latitude'));
                 const longitude = parseFloat(selectedOption.getAttribute('data-longitude'));
-    
+
                 if (!isNaN(latitude) && !isNaN(longitude)) {
                     map.setView([latitude, longitude], 15);
                 }
-    
+
                 // Fetch and display parcels
                 fetchParcellesForProject(selectedOption.value);
             });
-    
+
             // Set initial modal title if a project is already selected
             const initialProjectOption = projectSelect.options[projectSelect.selectedIndex];
             if (initialProjectOption) {
@@ -93,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateModalTitles(projectName, clientName);
             }
         }
-        
 
         let drawnItemsPolygon = new L.FeatureGroup();
         map.addLayer(drawnItemsPolygon);
@@ -184,7 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.message) {
                         // Hide the first modal
                         const projectMapModal = bootstrap.Modal.getInstance(document.getElementById('projectMapModal'));
-                        projectMapModal.hide();
+                        if (projectMapModal) {
+                            projectMapModal.hide();
+                        }
 
                         // Show the display parcels modal
                         const displayParcelsModal = new bootstrap.Modal(document.getElementById('displayParcelsModal'), {
@@ -384,47 +390,47 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-// Vérification des champs obligatoires
-                let isValid = true;
-                let errorMessage = "Form errors: {";
+                    // Vérification des champs obligatoires
+                    let isValid = true;
+                    let errorMessage = "Form errors: {";
 
-                if (!nameInput.value) {
-                    showAlert('Name is required.', 'nameAlert');
-                    errorMessage += `"name": [{"message": "Name is required.", "code": "required"}], `;
-                    isValid = false;
-                } else {
-                    hideAlert('nameAlert');
-                }
+                    if (!nameInput.value) {
+                        showAlert('Name is required.', 'nameAlert');
+                        errorMessage += `"name": [{"message": "Name is required.", "code": "required"}], `;
+                        isValid = false;
+                    } else {
+                        hideAlert('nameAlert');
+                    }
 
-                if (!nodeReference.value) {
-                    showAlert('Reference is required.', 'referenceAlert');
-                    errorMessage += `"reference": [{"message": "Reference is required.", "code": "required"}], `;
-                    isValid = false;
-                } else {
-                    hideAlert('referenceAlert');
-                }
+                    if (!nodeReference.value) {
+                        showAlert('Reference is required.', 'referenceAlert');
+                        errorMessage += `"reference": [{"message": "Reference is required.", "code": "required"}], `;
+                        isValid = false;
+                    } else {
+                        hideAlert('referenceAlert');
+                    }
 
-                if (!nodeSensors.value) {
-                    showAlert('Sensors is required.', 'sensorsAlert');
-                    errorMessage += `"sensors": [{"message": "Sensors is required.", "code": "required"}], `;
-                    isValid = false;
-                } else {
-                    hideAlert('sensorsAlert');
-                }
+                    if (!nodeSensors.value) {
+                        showAlert('Sensors is required.', 'sensorsAlert');
+                        errorMessage += `"sensors": [{"message": "Sensors is required.", "code": "required"}], `;
+                        isValid = false;
+                    } else {
+                        hideAlert('sensorsAlert');
+                    }
 
-                if (!nodeOrder.value) {
-                    showAlert('Order is required.', 'orderAlert');
-                    errorMessage += `"node_range": [{"message": "Order is required.", "code": "required"}], `;
-                    isValid = false;
-                } else {
-                    hideAlert('orderAlert');
-                }
+                    if (!nodeOrder.value) {
+                        showAlert('Order is required.', 'orderAlert');
+                        errorMessage += `"node_range": [{"message": "Order is required.", "code": "required"}], `;
+                        isValid = false;
+                    } else {
+                        hideAlert('orderAlert');
+                    }
 
-                if (!isValid) {
-                    errorMessage = errorMessage.slice(0, -2) + "}";
-                    showGlobalAlert(errorMessage);
-                    return; // Arrête l'exécution si un champ est manquant
-                }
+                    if (!isValid) {
+                        errorMessage = errorMessage.slice(0, -2) + "}";
+                        showGlobalAlert(errorMessage);
+                        return; // Arrête l'exécution si un champ est manquant
+                    }
 
                     // Update hidden fields with the correct values
                     document.getElementById('nodePosition').value = `POINT(${coordinates.lng.toFixed(6)} ${coordinates.lat.toFixed(6)})`;
@@ -444,7 +450,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(response => response.json())
                     .then(data => {
                         if (data.message) {
-                            window.location.href = '/dashboard_super/project_list/';
+                            // Hide the display parcels modal
+                            const displayParcelsModalInstance = bootstrap.Modal.getInstance(document.getElementById('displayParcelsModal'));
+                            if (displayParcelsModalInstance) {
+                                displayParcelsModalInstance.hide();
+                            }
+
+                            // Show the custom display parcels modal
+                            const customDisplayParcelsModal = new bootstrap.Modal(document.getElementById('customDisplayParcelsModal'), {
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                            customDisplayParcelsModal.show();
+
+                            // Load parcels with nodes on the custom display map
+                            loadParcelsOnCustomDisplayMap(projectId);
                         } else if (data.error) {
                             let errorMessage = '';
                             for (const [field, errors] of Object.entries(data.error)) {
@@ -457,6 +477,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => console.error('Error:', error));
                 });
+            }
+
+            function loadParcelsOnCustomDisplayMap(projectId) {
+                const customDisplayMap = L.map("customDisplayMap", {
+                    center: [latitude, longitude],
+                    zoom: 15,
+                });
+
+                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(customDisplayMap);
+
+                fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.parcelles && data.parcelles.length > 0) {
+                            const bounds = [];
+                            data.parcelles.forEach(parcelle => {
+                                const polygon = L.polygon(parcelle.coordinates);
+                                polygon.feature = { properties: { id: parcelle.id } };
+                                polygon.addTo(customDisplayMap);
+                                bounds.push(...parcelle.coordinates);
+
+                                parcelle.nodes.forEach(node => {
+                                    const marker = L.marker([node.latitude, node.longitude]);
+                                    marker.bindPopup(
+                                        `<b>Name:</b> ${node.name}<br>
+                                         <b>Ref:</b> ${node.ref}`
+                                    );
+                                    marker.addTo(customDisplayMap);
+                                });
+                            });
+                            customDisplayMap.fitBounds(bounds);
+                        } else {
+                            console.log("No parcels found for this project.");
+                        }
+                    })
+                    .catch(error => console.error('Error fetching parcels:', error));
             }
         }
 
@@ -476,38 +532,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const inputs = ['nodeName', 'nodeReference', 'nodeSensors', 'nodeOrder'];
-            inputs.forEach(id => {
-                const input = document.getElementById(id);
-                if (input) {
-                    input.addEventListener('input', function() {
-                        const alertId = id.replace('node', '').toLowerCase() + 'Alert';
-                        hideAlert(alertId);
-                        hideGlobalAlert();
-                    });
-                }
-            });
-
-        const closeDisplayParcelsModalButton = document.getElementById('closeDisplayParcelsModal');
-        if (closeDisplayParcelsModalButton) {
-            closeDisplayParcelsModalButton.addEventListener('click', function() {
-                const listUrl = document.body.getAttribute('data-list-url');
-                window.location.href = listUrl;
-            });
-        }
-
-        const backDisplayButton = document.getElementById('backDisplayButton');
-        if (backDisplayButton) {
-            backDisplayButton.addEventListener('click', function() {
-                var displayParcelsModal = bootstrap.Modal.getInstance(document.getElementById('displayParcelsModal'));
-                displayParcelsModal.hide();
-
-                var projectMapModal = new bootstrap.Modal(document.getElementById('projectMapModal'), {
-                    backdrop: 'static',
-                    keyboard: false
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', function() {
+                    const alertId = id.replace('node', '').toLowerCase() + 'Alert';
+                    hideAlert(alertId);
                 });
-                projectMapModal.show();
-            });
-        }
+            }
+        });
 
         if (projectSelect) {
             const initialProjectId = projectSelect.options[projectSelect.selectedIndex]?.value;

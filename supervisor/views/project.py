@@ -227,22 +227,18 @@ def get_parcelles_for_project(request):
 def node_create(request):
     if request.method == 'POST':
         node_form = NodeForm(request.POST)
-        # print(request.POST)  # Affiche les données POST reçues
 
         if node_form.is_valid():
-            print('hello')  
             coordinates_data = request.POST.get('position')
             parcelle_id = request.POST.get('parcelle')
             try:
-                # Extraire les coordonnées du point
                 coordinates = coordinates_data.strip('POINT()').split()
                 longitude = float(coordinates[0])
                 latitude = float(coordinates[1])
                 point = Point(latitude, longitude)
-
+                print(point)
                 parcelle = get_object_or_404(Parcelle, id=parcelle_id)
 
-                # Vérifier si le point est à l'intérieur du polygone de la parcelle
                 if parcelle.polygon.contains(point):
                     node = node_form.save(commit=False)
                     node.position = point
@@ -255,22 +251,31 @@ def node_create(request):
                     nodes = [{
                         'id': n.id,
                         'name': n.name,
-                        'coordinates': [n.position.x, n.position.y]
+                        'latitude': n.position.x,
+                        'longitude': n.position.y,
+                        'ref': n.reference
                     } for n in Node.objects.filter(parcelle=node.parcelle)]
                     
-                    return JsonResponse({'message': message, 'nodes': nodes}, status=200)
+                    return JsonResponse({
+                        'message': message, 
+                        'nodes': nodes,
+                        'parcelle_id': parcelle.id,
+                        'project_id': parcelle.project.polygon_id,
+                        'project_name': parcelle.project.name,
+                        'latitude': parcelle.project.city.latitude,
+                        'longitude': parcelle.project.city.longitude
+                    }, status=200)
                 else:
                     return JsonResponse({'error': {'_all__': 'The node must be placed inside the plot.'}}, status=400)
             except (ValueError, TypeError) as e:
                 return JsonResponse({'error': {'coordinates': [{'message': 'Invalid coordinates format.', 'code': 'invalid'}]}}, status=400)
         else:
-            # Afficher les erreurs de validation du formulaire
-            errors = node_form.errors.as_json()
-            print('Form errors:', errors)  # Debug: Affiche les erreurs du formulaire
+            errors = node_form.errors.get_json_data()
             return JsonResponse({'error': errors}, status=400)
     else:
         node_form = NodeForm()
         return render(request, 'website/project.html', {'node_form': node_form})
+
     
 
 

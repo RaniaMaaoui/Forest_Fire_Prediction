@@ -100,7 +100,7 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
-        # Handle the datetime-local input format for browser compatibility
+        #? Handle the datetime-local input format for browser compatibility
         self.fields['date_debut'].input_formats = ('%Y-%m-%dT%H:%M',)
         self.fields['date_fin'].input_formats = ('%Y-%m-%dT%H:%M',)
 
@@ -148,12 +148,14 @@ class NodeForm(forms.ModelForm):
         ('1:eui-b770421e86700821', '1:eui-b770421e86700821'),
         ('2:eui-a835411eb0084141', '2:eui-a835411eb0084141'),
     ]
-
     reference = forms.ChoiceField(
-        choices=NODE_REFERENCE_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'nodeReference', 'style': 'height: calc(1.5em + .75rem + 3px);'})
+        choices=[('', 'Node reference')] + NODE_REFERENCE_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-control form-control-sm', 
+            'id': 'nodeReference', 
+            'style': 'height: calc(1.5em + .75rem + 3px);'
+        })
     )
-
     class Meta:
         model = Node
         fields = ['name', 'reference', 'sensors', 'node_range', 'latitude', 'longitude', 'position', 'parcelle']

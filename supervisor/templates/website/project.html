@@ -163,7 +163,7 @@
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: 300%;">
                         <div class="modal-header">
                             <h4 class="modal-title text-success fw-bold" id="projectFormModalLabel">
-                                Draw plots project: {{ project_name }} of client: {{ client_name }}
+                                Draw plots project: <span style="color: black;">{{ project_name }}</span> of client: <span style="color: black;">{{ client_name }}</span>
                             </h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeDisplayParcelsModal"></button>
                         </div>
@@ -279,10 +279,28 @@
             <!-- Display Parcels Modal End -->
 
 
-
-
-
-
+            <!-- Get Node Of Parcelle -->
+            <div class="modal" id="customDisplayParcelsModal" tabindex="-1" aria-labelledby="customDisplayParcelsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 100%; max-height: none;">
+                    <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: none;">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-success fw-bold" id="customDisplayParcelsModalLabel">LAST NODE ADDED OF PROJECT:</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeCustomButton"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="content-map-node mb-3" style="height: 90%;">
+                                <div id="customDisplayMap" style="width: 100%; height: 100%;"></div>
+                            </div>
+                            <div class="text-center">
+                                <a href="{% url 'supervisor:list_project' %}">
+                                    <button type="button" class="btn btn-primary custom-gradient-button btn-lg" id="customNextButtonMarker" style="padding: 2px 100px; border-radius: 20px; font-size: 25px;">Next</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Get Node Of Parcelle End -->
 
         </div>
     </div>
@@ -390,6 +408,36 @@ document.addEventListener('DOMContentLoaded', function() {
             projectModal.show();
         });
     }
+
+    const closeDisplayParcelsModalButton = document.getElementById('closeDisplayParcelsModal');
+        if (closeDisplayParcelsModalButton) {
+            closeDisplayParcelsModalButton.addEventListener('click', function() {
+                const listUrl = document.body.getAttribute('data-list-url');
+                window.location.href = listUrl;
+            });
+        }
+
+        const closeCustomButton = document.getElementById('closeCustomButton');
+        if (closeCustomButton){
+            closeCustomButton.addEventListener('click', function(){
+                const listUrl = document.body.getAttribute('data-list-url');
+                window.location.href = listUrl;
+            });
+        }
+
+        const backDisplayButton = document.getElementById('backDisplayButton');
+        if (backDisplayButton) {
+            backDisplayButton.addEventListener('click', function() {
+                var displayParcelsModal = bootstrap.Modal.getInstance(document.getElementById('displayParcelsModal'));
+                displayParcelsModal.hide();
+
+                var projectMapModal = new bootstrap.Modal(document.getElementById('projectMapModal'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                projectMapModal.show();
+            });
+        }
 
     var editButtons = document.querySelectorAll('.project-card-action.btn.btn-sm.btn-warning');
     editButtons.forEach(function(btn) {
