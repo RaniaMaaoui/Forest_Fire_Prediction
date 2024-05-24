@@ -1,34 +1,36 @@
-from pathlib import Path
 import os
+from pathlib import Path
 from django.contrib.messages import constants as messages
+
+# Ajouter le chemin de la bibliothèque GDAL
+GDAL_LIBRARY_PATH = r'C:\Users\moham\OneDrive\Bureau\fire_detection_web\.env\Lib\site-packages\osgeo\gdal301.dll'
+
+if GDAL_LIBRARY_PATH:
+    os.environ['GDAL_LIBRARY_PATH'] = GDAL_LIBRARY_PATH
+
+# Vérifiez si la variable est bien définie
+print("GDAL_LIBRARY_PATH:", os.environ.get('GDAL_LIBRARY_PATH'))
 
 if os.name == 'nt':
     VENV_BASE = os.environ['VIRTUAL_ENV']
     os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
-    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj')
 
-
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Construction des chemins à l'intérieur du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# Clé secrète pour le déploiement
 SECRET_KEY = 'django-insecure-o0$9+icstx@*4vthy_ufg^o0&q-5p-ydqf9oh_idqvn9xd3@wd'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Mode debug (à désactiver en production)
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# Définition des applications installées
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,13 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'location_field',
-
     'home',
     'authentication',
     'supervisor',
     'client',
 ]
 
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,8 +55,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Configuration de l'URL racine
 ROOT_URLCONF = 'project.urls'
 
+# Configuration des templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -71,19 +75,18 @@ TEMPLATES = [
     },
 ]
 
+# Configuration WSGI et ASGI
 WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = 'project.asgi.application'
 
+# Configuration de Channels
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
+# Configuration de la base de données
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -95,10 +98,7 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
+# Validation des mots de passe
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -114,41 +114,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
+# Internationalisation
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
+# Configuration des fichiers statiques
 STATIC_URL = 'static/'
 MEDIA_URL = 'img/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'img/')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
+# Configuration de la clé primaire par défaut
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# Configuration des e-mails
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mohamedhedigharbi101@gmail.com'  
-EMAIL_HOST_PASSWORD = 'pacesqcanahtmpks'  
+EMAIL_HOST_USER = 'mohamedhedigharbi101@gmail.com'
+EMAIL_HOST_PASSWORD = 'pacesqcanahtmpks'
 
-
-
+# Configuration des messages
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
     messages.INFO: 'info',
@@ -157,7 +145,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-
+# Optionnel : Configuration de la journalisation
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,

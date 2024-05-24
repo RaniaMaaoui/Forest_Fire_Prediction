@@ -29,7 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.parcelles && data.parcelles.length > 0) {
                 const bounds = [];
                 data.parcelles.forEach(parcelle => {
-                    const polygon = L.polygon(parcelle.coordinates);
+                    const polygon = L.polygon(parcelle.coordinates, {
+                        color: 'blue',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.5
+                    });
                     polygon.addTo(map);
                     bounds.push(...parcelle.coordinates);
 

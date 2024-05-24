@@ -58,7 +58,8 @@ class ProjectForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'name': 'client',
             'class': 'form-control',
-            'placeholder': 'Select Client'
+            'placeholder': 'Select Client', 
+            'id': 'projectClient'
         })
     )
     city = CustomModelChoiceField(
@@ -68,6 +69,7 @@ class ProjectForm(forms.ModelForm):
         widget=forms.Select(attrs={
             'name': 'city',
             'class': 'form-control',
+            'id': 'regionName'
         })
     )
 
@@ -78,23 +80,28 @@ class ProjectForm(forms.ModelForm):
             'name': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Project Name', 
-                'required': True
+                'required': True,
+                'id': 'projectName'
             }),
             'descp': forms.Textarea(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Project Description',
                 'rows': 2,  
+                'id': 'projectDescription'
             }),
             'piece_joindre': forms.ClearableFileInput(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
+                'id': 'projectContract'
             }),
             'date_debut': forms.DateTimeInput(attrs={
                 'class': 'form-control', 
-                'type': 'datetime-local'
+                'type': 'datetime-local',
+                'id': 'projectStartDate'
             }, format='%Y-%m-%dT%H:%M'),
             'date_fin': forms.DateTimeInput(attrs={
                 'class': 'form-control', 
-                'type': 'datetime-local'
+                'type': 'datetime-local',
+                'id': 'projectEndDate'
             }, format='%Y-%m-%dT%H:%M')
         }
 
@@ -145,8 +152,8 @@ class ParcelleForm(forms.ModelForm):
 
 class NodeForm(forms.ModelForm):
     NODE_REFERENCE_CHOICES = [
-        ('1:eui-b770421e86700821', '1:eui-b770421e86700821'),
-        ('2:eui-a835411eb0084141', '2:eui-a835411eb0084141'),
+        ('eui-70b3d57ed0066fcf', 'eui-70b3d57ed0066fcf'),
+        ('eui-a835411eb0084141', 'eui-a835411eb0084141'),
     ]
     reference = forms.ChoiceField(
         choices=[('', 'Node reference')] + NODE_REFERENCE_CHOICES,

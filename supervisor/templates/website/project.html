@@ -139,6 +139,10 @@
                                                         </a>
                                                         <a href="#" class="project-card-action btn btn-sm btn-warning" data-project-id="{{ project.pk }}"><i class="fa fa-edit"></i></a>
                                                         <a href="{% url 'supervisor:delete_project' project.pk %}" class="project-card-action btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this project?');"><i class="fa fa-trash"></i></a>
+                                                        <a href="#" class="project-card-action btn btn-sm btn-info" id="showCustomParcelsNodesModal"
+                                                            data-project-id="{{ project.pk }}" data-project-name="{{ project.name }}">
+                                                            <i class="fas fa-draw-polygon"></i>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -302,6 +306,29 @@
             </div>
             <!-- Get Node Of Parcelle End -->
 
+
+            <!-- CRUD Parcelle and Node -->
+            <div class="modal" id="customParcelsNodesModal" tabindex="-1" aria-labelledby="customParcelsNodesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 100%; max-height: none;">
+                    <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: none;">
+                        <div class="modal-header">
+                            <h4 class="modal-title text-success fw-bold" id="customParcelsNodesModalLabel">UPDATE NODE AND PARCELLE OF PROJECT:</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeCustomParcelsNodesButton"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="content-map-node mb-3" style="height: 90%;">
+                                <div id="customParcelsNodesMap" style="width: 100%; height: 100%;"></div>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary custom-gradient-button btn-lg" id="customParcelsNodesUpdateButton" style="padding: 2px 100px; border-radius: 20px; font-size: 25px;">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CRUD Parcelle and Node End -->
+
+
         </div>
     </div>
 
@@ -372,11 +399,17 @@ document.addEventListener('DOMContentLoaded', function() {
         myModal.show();
     });
 
-    const link = window.location.search;
-    if(link.includes('client_id') && link.includes('reload')) {
-        document.querySelector('#list').click();
-        window.history.replaceState(null, '', '?');
+    function openProjectListModal() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('client_id') && params.has('reload')) {
+            const projectListModal = new bootstrap.Modal(document.getElementById('projectList'));
+            projectListModal.show();
+            window.history.replaceState(null, '', window.location.pathname);
+        }
     }
+
+    openProjectListModal();
+
 
     var shouldShowMapModal = document.body.getAttribute('data-showmapmodal') === 'true';
     if (shouldShowMapModal) {
@@ -446,6 +479,261 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Project ID:', projectId);
         });
     });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const customParcelsNodesModal = new bootstrap.Modal(document.getElementById('customParcelsNodesModal'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    let deletedPolygons = [];
+    let deletedMarkers = [];
+
+    document.querySelectorAll('#showCustomParcelsNodesModal').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const projectId = this.getAttribute('data-project-id');
+            const projectName = this.getAttribute('data-project-name');
+
+            const modalTitle = document.getElementById('customParcelsNodesModalLabel');
+            modalTitle.innerHTML = `UPDATE NODE AND PARCELLE OF PROJECT: <span style="color: black;">${projectName}</span>`;
+            
+            loadParcelsNodesMap(projectId);
+            customParcelsNodesModal.show();
+        });
+    });
+
+    function loadParcelsNodesMap(projectId) {
+        const mapElement = document.getElementById('customParcelsNodesMap');
+        if (!mapElement) {
+            console.error("Map element is missing.");
+            return;
+        }
+        
+        // Remove any existing map instance
+        if (window.customMap) {
+            window.customMap.remove();
+        }
+
+        fetch(`/dashboard_super/get_project_details/${projectId}/`)
+            .then(response => response.json())
+            .then(projectData => {
+                const latitude = projectData.latitude;
+                const longitude = projectData.longitude;
+
+                const map = window.customMap = L.map(mapElement).setView([latitude, longitude], 15); // Center on project coordinates
+
+                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(map);
+
+                fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.parcelles && data.parcelles.length > 0) {
+                            const bounds = [];
+                            data.parcelles.forEach(parcelle => {
+                                const polygon = L.polygon(parcelle.coordinates, {
+                                    color: 'blue',
+                                    weight: 2,
+                                    opacity: 1,
+                                    fillOpacity: 0.5
+                                }).bindPopup(
+                                    `<b>Parcelle ID:</b> ${parcelle.id}<br>
+                                     <button class="edit-polygon" data-id="${parcelle.id}">Edit</button>
+                                     <button class="delete-polygon" data-id="${parcelle.id}">Delete</button>`
+                                );
+                                polygon.feature = { properties: { id: parcelle.id } };
+                                polygon.addTo(map);
+                                bounds.push(...parcelle.coordinates);
+
+                                parcelle.nodes.forEach(node => {
+                                    const marker = L.marker([node.latitude, node.longitude]).bindPopup(
+                                        `<b>Name:</b> ${node.name}<br>
+                                         <b>Ref:</b> ${node.ref}<br>
+                                         <button class="edit-marker" data-id="${node.id}">Edit</button>
+                                         <button class="delete-marker" data-id="${node.id}">Delete</button>`
+                                    );
+                                    marker.feature = { properties: { id: node.id } };
+                                    marker.addTo(map);
+                                });
+                            });
+                            map.fitBounds(bounds);
+                        } else {
+                            console.log("No parcels found for this project.");
+                        }
+
+                        addDrawControls(map);
+                    })
+                    .catch(error => console.error('Error fetching parcels:', error));
+
+                let drawnItemsPolygon = new L.FeatureGroup();
+                map.addLayer(drawnItemsPolygon);
+
+                let drawnItemsMarker = new L.FeatureGroup();
+                map.addLayer(drawnItemsMarker);
+
+                function addDrawControls(map) {
+                    let drawControlPolygon = new L.Control.Draw({
+                        edit: {
+                            featureGroup: drawnItemsPolygon
+                        },
+                        draw: {
+                            polygon: true,
+                            polyline: false,
+                            rectangle: false,
+                            circle: false,
+                            marker: false,
+                            circlemarker: false
+                        }
+                    });
+                    map.addControl(drawControlPolygon);
+
+                    let drawControlMarker = new L.Control.Draw({
+                        edit: {
+                            featureGroup: drawnItemsMarker
+                        },
+                        draw: {
+                            polygon: false,
+                            polyline: false,
+                            rectangle: false,
+                            circle: false,
+                            marker: true,
+                            circlemarker: false
+                        }
+                    });
+                    map.addControl(drawControlMarker);
+
+                    map.on(L.Draw.Event.CREATED, function(event) {
+                        const layer = event.layer;
+                        if (event.layerType === 'polygon') {
+                            drawnItemsPolygon.addLayer(layer);
+                        } else if (event.layerType === 'marker') {
+                            drawnItemsMarker.addLayer(layer);
+                        }
+                    });
+
+                    map.on(L.Draw.Event.EDITED, function(event) {
+                        const layers = event.layers;
+                        layers.eachLayer(function(layer) {
+                            if (layer instanceof L.Polygon) {
+                                drawnItemsPolygon.addLayer(layer);
+                            } else if (layer instanceof L.Marker) {
+                                drawnItemsMarker.addLayer(layer);
+                            }
+                        });
+                    });
+
+                    map.on(L.Draw.Event.DELETED, function(event) {
+                        const layers = event.layers;
+                        layers.eachLayer(function(layer) {
+                            if (layer instanceof L.Polygon) {
+                                deletedPolygons.push(layer.feature.properties.id);
+                            } else if (layer instanceof L.Marker) {
+                                deletedMarkers.push(layer.feature.properties.id);
+                            }
+                        });
+                    });
+
+                    document.getElementById('customParcelsNodesUpdateButton').addEventListener('click', function() {
+                        updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker);
+                    });
+                }
+
+                document.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('edit-polygon')) {
+                        const id = event.target.getAttribute('data-id');
+                        const polygonLayer = findLayerById(map, id, 'polygon');
+                        if (polygonLayer) {
+                            polygonLayer.editing.enable();
+                        }
+                    }
+                    if (event.target.classList.contains('delete-polygon')) {
+                        const id = event.target.getAttribute('data-id');
+                        const polygonLayer = findLayerById(map, id, 'polygon');
+                        if (polygonLayer) {
+                            deletedPolygons.push(id);
+                            map.removeLayer(polygonLayer);
+                        }
+                    }
+                    if (event.target.classList.contains('edit-marker')) {
+                        const id = event.target.getAttribute('data-id');
+                        const markerLayer = findLayerById(map, id, 'marker');
+                        if (markerLayer) {
+                            markerLayer.dragging.enable();
+                            markerLayer.on('dragend', function() {
+                                markerLayer.feature.properties.modified = true;
+                            });
+                        }
+                    }
+                    if (event.target.classList.contains('delete-marker')) {
+                        const id = event.target.getAttribute('data-id');
+                        const markerLayer = findLayerById(map, id, 'marker');
+                        if (markerLayer) {
+                            deletedMarkers.push(id);
+                            map.removeLayer(markerLayer);
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching project details:', error));
+    }
+
+    function updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker) {
+        const layersPolygon = drawnItemsPolygon.getLayers();
+        const layersMarker = drawnItemsMarker.getLayers();
+
+        const coordinatesPolygon = layersPolygon.map(layer => {
+            const id = layer.feature.properties.id;
+            const coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+            return { id, coordinates };
+        });
+
+        const coordinatesMarker = layersMarker.map(layer => {
+            const id = layer.feature.properties ? layer.feature.properties.id : null;
+            const latlng = layer.getLatLng();
+            return { id, latitude: latlng.lat, longitude: latlng.lng, modified: layer.feature.properties.modified || false };
+        });
+
+        fetch('/dashboard_super/update_parcels_nodes/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                project_id: projectId,
+                polygons: coordinatesPolygon,
+                markers: coordinatesMarker,
+                deleted_polygons: deletedPolygons,
+                deleted_markers: deletedMarkers
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Parcels and nodes updated successfully.');
+                customParcelsNodesModal.hide();
+                window.location.href = '/dashboard_super/project_list/';
+            } else if (data.error) {
+                alert('Error updating parcels and nodes.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function findLayerById(map, id, layerType) {
+        let layerFound = null;
+        map.eachLayer(function(layer) {
+            if (layer.feature && layer.feature.properties && layer.feature.properties.id === parseInt(id, 10)) {
+                if ((layerType === 'polygon' && layer instanceof L.Polygon) || 
+                    (layerType === 'marker' && layer instanceof L.Marker)) {
+                    layerFound = layer;
+                }
+            }
+        });
+        return layerFound;
+    }
 });
 </script>
 {% endblock %}

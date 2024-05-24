@@ -104,6 +104,8 @@ def get_project_details(request, project_id):
         data = {
             'project_name': project.name,
             'client_name': f"{project.client.firstName} {project.client.lastName}",
+            'latitude': project.city.latitude,
+            'longitude': project.city.longitude,
         }
         return JsonResponse(data)
     except Project.DoesNotExist:
@@ -303,3 +305,59 @@ def get_parcelles_with_nodes_for_project(request):
         return JsonResponse({'parcelles': parcelle_data}, status=200)
     else:
         return JsonResponse({'error': 'No project ID provided.'}, status=400)
+
+
+
+
+
+@login_required(login_url='supervisor_login')
+def update_parcels_nodes(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        project_id = data.get('project_id')
+        polygons = data.get('polygons', [])
+        markers = data.get('markers', [])
+        deleted_polygons = data.get('deleted_polygons', [])
+        deleted_markers = data.get('deleted_markers', [])
+
+        project = get_object_or_404(Project, pk=project_id)
+
+        # Supprimer les parcelles
+        for parcelle_id in deleted_polygons:
+            parcelle = get_object_or_404(Parcelle, pk=parcelle_id, project=project)
+            parcelle.delete()
+
+        # Supprimer les nœuds
+        for node_id in deleted_markers:
+            node = get_object_or_404(Node, pk=node_id)
+            node.delete()
+
+        # Mettre à jour les parcelles
+        for polygon_data in polygons:
+            parcelle_id = polygon_data.get('id')
+            coordinates = polygon_data.get('coordinates')
+            if parcelle_id:
+                parcelle = get_object_or_404(Parcelle, pk=parcelle_id, project=project)
+                parcelle.polygon = Polygon(coordinates)
+                parcelle.save()
+            else:
+                Parcelle.objects.create(project=project, polygon=Polygon(coordinates))
+
+        # Mettre à jour les nœuds
+        for marker_data in markers:
+            node_id = marker_data.get('id')
+            latitude = marker_data.get('latitude')
+            longitude = marker_data.get('longitude')
+            modified = marker_data.get('modified', False)
+            if node_id and modified:
+                node = get_object_or_404(Node, pk=node_id)
+                node.position = Point(latitude, longitude)  # longitude, latitude
+                node.latitude = latitude
+                node.longitude = longitude
+                node.save()
+            elif not node_id:
+                Node.objects.create(parcelle=project, position=Point(latitude, longitude), latitude=latitude, longitude=longitude)
+
+        return JsonResponse({'message': 'Parcels and nodes updated successfully.'}, status=200)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
