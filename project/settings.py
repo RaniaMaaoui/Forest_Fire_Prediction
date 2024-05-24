@@ -2,19 +2,19 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 
-# Ajouter le chemin de la bibliothèque GDAL
-GDAL_LIBRARY_PATH = r'C:\Users\moham\OneDrive\Bureau\fire_detection_web\.env\Lib\site-packages\osgeo\gdal301.dll'
-
+# Définir les variables d'environnement GDAL
+GDAL_LIBRARY_PATH = r'C:\Users\moham\OneDrive\Bureau\fire_detection_web\.env\Lib\site-packages\osgeo\gdal304.dll'
 if GDAL_LIBRARY_PATH:
     os.environ['GDAL_LIBRARY_PATH'] = GDAL_LIBRARY_PATH
-
-# Vérifiez si la variable est bien définie
-print("GDAL_LIBRARY_PATH:", os.environ.get('GDAL_LIBRARY_PATH'))
 
 if os.name == 'nt':
     VENV_BASE = os.environ['VIRTUAL_ENV']
     os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
     os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj')
+
+# Imprimer pour vérification
+print("GDAL_LIBRARY_PATH:", os.environ.get('GDAL_LIBRARY_PATH'))
+print("DJANGO_SETTINGS_MODULE:", os.environ.get('DJANGO_SETTINGS_MODULE'))
 
 # Construction des chemins à l'intérieur du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,7 +53,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+# Configuration WhiteNoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configuration de l'URL racine
 ROOT_URLCONF = 'project.urls'
@@ -121,7 +125,10 @@ USE_I18N = True
 USE_TZ = True
 
 # Configuration des fichiers statiques
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # Assurez-vous que ce chemin est correct
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = 'img/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'img/')
 
@@ -144,20 +151,3 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
-
-# Optionnel : Configuration de la journalisation
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#         },
-#     },
-# }

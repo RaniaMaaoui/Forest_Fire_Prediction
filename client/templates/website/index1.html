@@ -115,7 +115,7 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>28.06 °C</h3>
+                                                <h3 id="temperature">-- °C</h3>
                                                 <p>Temperature</p>
                                             </div>
                                         </div>
@@ -130,7 +130,7 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>13486</h3>
+                                                <h3 id="gas">-- ppm</h3>
                                                 <p>Gas rate</p>
                                                 <i class="fas fa-eye"></i>
                                             </div>
@@ -146,7 +146,7 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>100%</h3>
+                                                <h3 id="humidity">-- %</h3>
                                                 <p>Humidity</p>
                                                 <i class="fas fa-tint"></i>
                                             </div>
@@ -162,8 +162,8 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>2.1 m/s</h3>
-                                                <p>Wind Speed</p>
+                                                <h3 id="pressure">-- hPa</h3>
+                                                <p>Pressure</p>
                                                 <i class="fas fa-wind"></i>
                                             </div>
                                         </div>
@@ -178,8 +178,8 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>26 Pha</h3>
-                                                <p>Pressure</p>
+                                                <h3>26</h3>
+                                                <p>Wind Speed</p>
                                                 <i class="fas fa-wind"></i>
                                             </div>
                                         </div>
@@ -229,5 +229,30 @@
 
 
 {% block scripts %}
+<script>
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
 
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const message = data.message;
+        const sensorData = data.data;
+
+        document.getElementById("temperature").innerText = sensorData.temperature + " °C";
+        document.getElementById("humidity").innerText = sensorData.humidity + " %";
+        document.getElementById("gas").innerText = sensorData.gaz + " ppm";
+        document.getElementById("pressure").innerText = sensorData.pressure + " hPa";
+    };
+
+    socket.onopen = function() {
+        console.log("WebSocket connection established");
+    };
+
+    socket.onclose = function() {
+        console.log("WebSocket connection closed");
+    };
+
+    socket.onerror = function(error) {
+        console.error("WebSocket error:", error);
+    };
+</script>
 {% endblock %}

@@ -292,10 +292,10 @@
                                             <i class="fas fa-cloud"></i> Weather Information
                                         </div>
                                         <div class="card-body">
-                                            <p><strong>Temperature:</strong> 26°C</p>
-                                            <p><strong>Humidity:</strong> 61%</p>
-                                            <p><strong>Pressure:</strong> 100 hPa</p>
-                                            <p><strong>Gas Concentration:</strong> 24 ppm</p>
+                                            <p><strong>Temperature:</strong> <span id="temperature">N/A</span>°C</p>
+                                            <p><strong>Humidity:</strong> <span id="humidity">N/A</span>%</p>
+                                            <p><strong>Pressure:</strong> <span id="pressure">N/A</span> hPa</p>
+                                            <p><strong>Gas Concentration:</strong> <span id="gas">N/A</span> ppm</p>
                                             <p><strong>Wind Speed:</strong> 2.57 km/h</p>
                                             <p><strong>Rain Volume:</strong> 0.0 mm</p>
                                         </div>
@@ -342,4 +342,65 @@
 {% endblock %}
 
 {% block scripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nodeData = loadNodeDataFromLocalStorage();
+
+        // Initialiser les éléments avec les données sauvegardées
+        document.getElementById('nodeReference').innerText = nodeData.ref || 'N/A';
+        document.getElementById('nodeDutyCycle').innerText = nodeData.duty_cycle || 'N/A';
+        document.getElementById('nodeRSSI').innerText = nodeData.rssi || 'N/A';
+        document.getElementById('nodeBatteryLevel').innerText = nodeData.battery_level || 'N/A';
+        
+        // Ajouter les valeurs de température, humidité, pression et gaz
+        document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
+        document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
+        document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
+        document.getElementById('gas').innerText = nodeData.gas || 'N/A';
+
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.message === 'MQTT data received') {
+                const nodeData = data.data;
+                document.getElementById('nodeReference').innerText = nodeData.device_id || 'N/A';
+                document.getElementById('nodeDutyCycle').innerText = nodeData.duty_cycle || 'N/A';
+                document.getElementById('nodeRSSI').innerText = nodeData.rssi || 'N/A';
+                document.getElementById('nodeBatteryLevel').innerText = nodeData.battery_level || 'N/A';
+                
+                // Mettre à jour les valeurs de température, humidité, pression et gaz
+                document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
+                document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
+                document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
+                document.getElementById('gas').innerText = nodeData.gas || 'N/A';
+
+                saveNodeDataToLocalStorage(nodeData);
+            }
+        };
+
+        socket.onopen = function(event) {
+            console.log("WebSocket connection established");
+        };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket connection closed");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error: ", error);
+        };
+
+        function saveNodeDataToLocalStorage(data) {
+            localStorage.setItem('nodeData', JSON.stringify(data));
+        }
+
+        function loadNodeDataFromLocalStorage() {
+            const data = localStorage.getItem('nodeData');
+            return data ? JSON.parse(data) : {};
+        }
+    });
+</script>
+
 {% endblock %}
