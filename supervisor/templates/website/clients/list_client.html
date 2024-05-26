@@ -12,10 +12,6 @@
         </nav>
         <!-- Navbar End -->
 
-
-
-
-
         <!-- Clients List Start -->
         <div class="container-fluid pt-4 px-4">
             <div class="bg-light rounded p-4">
@@ -23,7 +19,7 @@
                     <a class="btn btn-primary gradient-button" id="addProjectBtn">+ Add New Client</a>
                 </div>
 
-                <!-- Add New Client Form Modal -->               
+                <!-- Add New Client Form Modal -->
                 <div class="modal" id="addClientFormModal" tabindex="-1" aria-labelledby="addClientFormModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content" style="border: 3px solid #32CD32; border-radius: 15px;">
@@ -34,78 +30,90 @@
                             <div class="modal-body">
                                 <form method="post" enctype="multipart/form-data" id="addClientFormContent" action="{% url 'supervisor:add_client' %}">
                                     {% csrf_token %}
+                                    {% if form.non_field_errors %}
+                                        <div class="text-danger" id="non-field-errors" role="alert">{{ form.non_field_errors }}</div>
+                                    {% endif %}
+                                    
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <!-- Last Name -->
                                             <div class="form-group">
                                                 <label for="id_lastName">Last Name</label>
                                                 {{ form.lastName }}
-                                                {{ form.errors.lastName }}
+                                                {% if form.lastName.errors %}
+                                                    <div class="text-danger" id="error-lastName" role="alert">{{ form.lastName.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <!-- First Name -->
                                             <div class="form-group">
                                                 <label for="id_firstName">First Name</label>
                                                 {{ form.firstName }}
-                                                {{ form.errors.firstName }}
+                                                {% if form.firstName.errors %}
+                                                    <div class="text-danger" id="error-firstName" role="alert">{{ form.firstName.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <!-- Username -->
                                             <div class="form-group">
                                                 <label for="id_username">Username</label>
                                                 {{ form.username }}
-                                                {{ form.errors.username }}
+                                                {% if form.username.errors %}
+                                                    <div class="text-danger" id="error-username" role="alert">{{ form.username.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <!-- Phone -->
                                             <div class="form-group">
                                                 <label for="id_phone">Phone</label>
                                                 {{ form.phone }}
-                                                {{ form.errors.phone }}
+                                                {% if form.phone.errors %}
+                                                    <div class="text-danger" id="error-phone" role="alert">{{ form.phone.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <!-- Email -->
                                             <div class="form-group">
                                                 <label for="id_email">Email</label>
                                                 {{ form.email }}
-                                                {{ form.errors.email }}
+                                                {% if form.email.errors %}
+                                                    <div class="text-danger" id="error-email" role="alert">{{ form.email.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <!-- Select Image -->
                                             <div class="form-group">
                                                 <label for="id_image">Select Image</label>
                                                 {{ form.image }}
-                                                {{ form.errors.image }}
+                                                {% if form.image.errors %}
+                                                    <div class="text-danger" id="error-image" role="alert">{{ form.image.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <!-- Password -->
                                             <div class="form-group">
                                                 <label for="id_password">Password</label>
                                                 {{ form.password }}
-                                                {{ form.errors.password }}
+                                                {% if form.password.errors %}
+                                                    <div class="text-danger" id="error-password" role="alert">{{ form.password.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <!-- Confirmed Password -->
                                             <div class="form-group">
                                                 <label for="id_password_confirmation">Confirmed Password</label>
                                                 {{ form.password_confirmation }}
-                                                {{ form.errors.password_confirmation }}
+                                                {% if form.password_confirmation.errors %}
+                                                    <div class="text-danger" id="error-password_confirmation" role="alert">{{ form.password_confirmation.errors }}</div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -120,107 +128,85 @@
                 </div>
                 <!-- Client Form Modal End -->
 
-                <div class="row">
-                    {% for client in clients %}
-                        <!-- Update Client Form Modal -->
-                        <div class="modal" id="updateClientFormModal" tabindex="-1" aria-labelledby="updateClientFormModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content" style="border: 3px solid #32CD32; border-radius: 15px;">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="updateClientFormModalLabel">Update Client</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Update Client Form Modal -->
+                <div class="modal" id="updateClientFormModal" tabindex="-1" aria-labelledby="updateClientFormModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content" style="border: 3px solid #32CD32; border-radius: 15px;">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateClientFormModalLabel">Update Client</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" enctype="multipart/form-data" id="updateClientFormContent">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="update-client-pk" name="pk">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_lastName">Last Name</label>
+                                                <input type="text" id="update_id_lastName" name="lastName" class="form-control">
+                                                <div class="text-danger" id="error-update-lastName"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_firstName">First Name</label>
+                                                <input type="text" id="update_id_firstName" name="firstName" class="form-control">
+                                                <div class="text-danger" id="error-update-firstName"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="modal-body">
-                                        <form method="post" enctype="multipart/form-data" id="updateClientFormContent" action="{% url 'supervisor:update_client' client.pk %}">
-                                            {% csrf_token %}
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <!-- Last Name -->
-                                                    <div class="form-group">
-                                                        <label for="id_lastName">Last Name</label>
-                                                        {{ form.lastName }}
-                                                        {{ form.errors.lastName }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <!-- First Name -->
-                                                    <div class="form-group">
-                                                        <label for="id_firstName">First Name</label>
-                                                        {{ form.firstName }}
-                                                        {{ form.errors.firstName }}
-                                                    </div>
-                                                </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_username">Username</label>
+                                                <input type="text" id="update_id_username" name="username" class="form-control">
+                                                <div class="text-danger" id="error-update-username"></div>
                                             </div>
-            
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <!-- Username -->
-                                                    <div class="form-group">
-                                                        <label for="id_username">Username</label>
-                                                        {{ form.username }}
-                                                        {{ form.errors.username }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <!-- Phone -->
-                                                    <div class="form-group">
-                                                        <label for="id_phone">Phone</label>
-                                                        {{ form.phone }}
-                                                        {{ form.errors.phone }}
-                                                    </div>
-                                                </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_phone">Phone</label>
+                                                <input type="text" id="update_id_phone" name="phone" class="form-control" required>
+                                                <div class="text-danger" id="error-update-phone"></div>
                                             </div>
-                                            
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <!-- Email -->
-                                                    <div class="form-group">
-                                                        <label for="id_email">Email</label>
-                                                        {{ form.email }}
-                                                        {{ form.errors.email }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <!-- Select Image -->
-                                                    <div class="form-group">
-                                                        <label for="id_image">Select Image</label>
-                                                        {{ form.image }}
-                                                        {{ form.errors.image }}
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <!-- Password -->
-                                                    <div class="form-group">
-                                                        <label for="id_password">Password</label>
-                                                        {{ form.password }}
-                                                        {{ form.errors.password }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <!-- Confirmed Password -->
-                                                    <div class="form-group">
-                                                        <label for="id_password_confirmation">Confirmed Password</label>
-                                                        {{ form.password_confirmation }}
-                                                        {{ form.errors.password_confirmation }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Submit Button -->
-                                            <div class="text-center">
-                                                <button type="submit" class="btn btn-primary gradient-button" style="padding: 10px 100px; border-radius: 20px;">Submit</button>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
-                                </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_email">Email</label>
+                                                <input type="email" id="update_id_email" name="email" class="form-control">
+                                                <div class="text-danger" id="error-update-email"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="update_id_image">Select Image</label>
+                                                <input type="file" id="update_id_image" name="image" class="form-control-file">
+                                                <div class="text-danger" id="error-update-image"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Submit Button -->
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary gradient-button" style="padding: 10px 100px; border-radius: 20px;">Update</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <!-- Client Form Modal End -->
+                    </div>
+                </div>
+                <!-- Update Client Form Modal End -->
 
+                <div class="row" id="clientList">
+                    {% for client in clients %}
                         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-                            <div class="card h-100">
+                            <div class="card h-100 client-item" id="client-{{ client.pk }}">
                                 <div class="card-body d-flex flex-column">
                                     <div class="dropdown float-end">
                                         <a href="#" class="bi bi-three-dots-vertical" data-bs-toggle="dropdown"></a>
@@ -235,8 +221,8 @@
                                         {% else %}
                                         <img src="{% static 'img/default-avatar.jpg' %}" class="rounded-circle avatar-md img-thumbnail" alt="default">
                                         {% endif %}
-                                        <h5 class="mt-3">{{ client.firstName }} {{ client.lastName }}</h5>
-                                        <p>{{ client.email }}</p>
+                                        <h5 class="mt-3 client-name">{{ client.firstName }} {{ client.lastName }}</h5>
+                                        <p class="client-email">{{ client.email }}</p>
                                     </div>
                                     <div class="mt-auto">
                                         <div class="row text-center">
@@ -251,17 +237,15 @@
                                 </div>
                             </div>
                         </div>
-                        {% empty %}
+                    {% empty %}
                         <div class="col-12">
                             <p>No clients found.</p>
                         </div>
                     {% endfor %}
                 </div>
             </div>
-            <!-- Clients List End -->
         </div>
-
-
+        <!-- Clients List End -->
 
         <!-- Footer Start -->
         <div class="container-fluid pt-4 px-4">
@@ -280,84 +264,173 @@
 
     </div>
     <!-- Content End -->
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                var content = popoverTriggerEl.getAttribute('data-bs-content');
+                if (!content) {
+                    content = 'No data available'; // Fallback content if data-bs-content is null
+                }
                 return new bootstrap.Popover(popoverTriggerEl, {
-                    trigger: 'focus'
+                    trigger: 'focus',
+                    content: content
                 });
             });
 
-
-        document.getElementById('addProjectBtn').addEventListener('click', function () {
-            var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'), {
-                backdrop: 'static',
-                keyboard: false
+            document.getElementById('addProjectBtn').addEventListener('click', function () {
+                var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                myModal.show();
             });
-            myModal.show();
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM content loaded and script executed.');
 
-        console.log(location.search.includes('update_client'))
-        if (window.location.search.includes('update_client')){
-            var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
-                backdrop: 'static',
-                keyboard: false
-            });
-            myModal.show();
-        }
-    });
-
-        function updateQueryStringParameter(key, value) {
-            var uri = window.location.href;
-            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-            if (uri.match(re)) {
-                window.history.replaceState({}, '', uri.replace(re, '$1' + key + "=" + value + '$2'));
-            } else {
-                window.history.replaceState({}, '', uri + separator + key + "=" + value);
-            }
-        }
-
-
-
-    
-    function updateClientWrapper() { 
-    let prevClientId; 
-    let clientData;
-    return (clientId) => {
-        if(prevClientId !== clientId) {
-        updateQueryStringParameter('update_client', clientId);
-        fetch(`/dashboard_super/update_client/${clientId}`, { withCredentials: true })
-            .then(res => res.json())
-            .then(data => {
-            prevClientId = clientId;
-            clientData = data;
-            console.log(data);
-            const currentForm = document.getElementById('updateClientFormContent')
-            let controls = currentForm.elements;
-
-                for (let i = 0; i < controls.length; i++) {
-                    if(controls[i] instanceof HTMLInputElement && controls[i].type !== 'file' && data[controls[i].name])
-                        controls[i].value = data[controls[i].name]
+            function removeErrorMessages(fieldId) {
+                const errorElement = document.querySelector('#error-update-' + fieldId);
+                if (errorElement) {
+                    errorElement.textContent = '';
                 }
-            }).catch(err => console.log({ err }));	
-        }	
-        showUpdateClientModal();
-    } 
-    }
+            }
 
-    function showUpdateClientModal() {
-    var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'), {
-        backdrop: 'static',
-        keyboard: false
-    });
-    myModal.show();
-    }
+            const formFields = ['lastName', 'firstName', 'username', 'phone', 'email'];
+            formFields.forEach(field => {
+                const inputElement = document.querySelector('#update_id_' + field);
+                if (inputElement) {
+                    inputElement.addEventListener('input', () => removeErrorMessages(field));
+                }
+            });
 
-        const updateClient = updateClientWrapper();
-    
+            var updateClientFormModal = document.getElementById('updateClientFormModal');
+            updateClientFormModal.addEventListener('hidden.bs.modal', function () {
+                var form = document.getElementById('updateClientFormContent');
+                form.reset();  // This should reset the form fields to their default values
+                formFields.forEach(field => {
+                    var inputElement = document.querySelector('#update_id_' + field);
+                    if (inputElement) {
+                        inputElement.value = '';
+                    }
+                    removeErrorMessages(field);
+                });
+            });
 
-</script>
+            window.updateClient = function(clientPk) {
+                console.log('updateClient called with clientPk:', clientPk);
+                fetch(`/dashboard_super/update_client/${clientPk}`)
+                    .then(response => {
+                        console.log('fetch response received:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data received:', data);
+                        // Fill the form fields with the fetched data
+                        document.querySelector('#update_id_firstName').value = data.firstName;
+                        document.querySelector('#update_id_lastName').value = data.lastName;
+                        document.querySelector('#update_id_email').value = data.email;
+                        document.querySelector('#update_id_phone').value = data.phone;
+                        document.querySelector('#update_id_username').value = data.username;
+                        document.querySelector('#update-client-pk').value = clientPk;
+
+                        var form = document.getElementById('updateClientFormContent');
+                        form.action = `/dashboard_super/update_client/${clientPk}/`;  // Update form action
+
+                        var myModal = new bootstrap.Modal(document.getElementById('updateClientFormModal'));
+                        myModal.show();
+                    })
+                    .catch(error => console.error('Error fetching client data:', error));
+            }
+
+            document.getElementById('updateClientFormContent').addEventListener('submit', function(event) {
+                event.preventDefault();
+                console.log('Form submission intercepted.');
+
+                var form = event.target;
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    console.log('Form submission response received:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received after form submission:', data);
+                    if (data.success) {
+                        // Handle success, maybe close the modal and show a success message
+                        var myModalEl = document.getElementById('updateClientFormModal');
+                        var modal = bootstrap.Modal.getInstance(myModalEl);
+                        modal.hide();
+
+                        // Update the client item in the list
+                        var clientItem = document.getElementById('client-' + data.client.pk);
+                        clientItem.querySelector('.client-name').textContent = data.client.firstName + ' ' + data.client.lastName;
+                        clientItem.querySelector('.client-email').textContent = data.client.email;
+                        clientItem.querySelector('.client-phone').textContent = data.client.phone;
+
+                        // Optionally reload the client list or update the UI
+                    } else {
+                        // Handle validation errors, display them on the form
+                        for (let field in data.errors) {
+                            let errorElement = document.querySelector('#error-update-' + field);
+                            if (errorElement) {
+                                errorElement.textContent = data.errors[field][0];
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Error submitting form:', error));
+            });
+
+            if ("{{ show_modal }}" == "True") {
+                var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'));
+                myModal.show();
+            }
+
+            function removeAddClientErrorMessages(fieldId) {
+                const errorElement = document.querySelector('#error-' + fieldId);
+                if (errorElement) {
+                    errorElement.remove();
+                }
+            }
+
+            const addClientFormFields = ['lastName', 'firstName', 'username', 'phone', 'email', 'password', 'password_confirmation'];
+            addClientFormFields.forEach(field => {
+                const inputElement = document.querySelector('#id_' + field);
+                if (inputElement) {
+                    inputElement.addEventListener('input', () => removeAddClientErrorMessages(field));
+                }
+            });
+
+            var addClientFormModal = document.getElementById('addClientFormModal');
+            addClientFormModal.addEventListener('hidden.bs.modal', function () {
+                var form = document.getElementById('addClientFormContent');
+                form.reset();  // This should reset the form fields to their default values
+
+                // Manually clear the input fields to ensure they are empty
+                addClientFormFields.forEach(field => {
+                    var inputElement = document.querySelector('#id_' + field);
+                    if (inputElement) {
+                        inputElement.value = '';
+                    }
+                    removeAddClientErrorMessages(field);
+                });
+
+                // Clear non-field errors
+                const nonFieldErrors = document.getElementById('non-field-errors');
+                if (nonFieldErrors) {
+                    nonFieldErrors.remove();
+                }
+            });
+        });
+    </script>
 {% endblock %}

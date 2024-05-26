@@ -399,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
         myModal.show();
     });
 
+
     function openProjectListModal() {
         const params = new URLSearchParams(window.location.search);
         if (params.has('client_id') && params.has('reload')) {
@@ -407,7 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.history.replaceState(null, '', window.location.pathname);
         }
     }
-
     openProjectListModal();
 
 
@@ -482,6 +482,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+<!--* Update polygon  -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const customParcelsNodesModal = new bootstrap.Modal(document.getElementById('customParcelsNodesModal'), {

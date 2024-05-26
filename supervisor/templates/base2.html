@@ -27,6 +27,7 @@
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
+
     <!-- Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" 
     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
@@ -36,6 +37,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
+    <script src="{% static 'js/index.js' %}"></script>
 
 </head>
 <body data-showmapmodal="{{ show_map_modal|yesno:'true,false' }}" data-list-url="{% url 'supervisor:list_project' %}">
@@ -58,7 +60,6 @@
                     <a href="{% url 'supervisor:dashboard_super' %}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <a href="{% url 'supervisor:list_client' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>Customer list</a>
                     <a href="{% url 'supervisor:list_project' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>Project List</a>
-                    <!-- <a href="{% url 'supervisor:noeuds' %}" class="nav-item nav-link"><i class="fa fa-th-list me-2"></i>List Nodes</a> -->
                     <div style="position: fixed; bottom: 20px;">
                         <a href="{% url 'logout_supervisor' %}" class="nav-item nav-link"><i class="fa fa-sign-out-alt me-2"></i>Logout</a>
                     </div>

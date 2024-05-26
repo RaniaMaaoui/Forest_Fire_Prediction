@@ -1,17 +1,19 @@
+import json
+from supervisor.models.node         import Node
+from django.db.models               import Count, Value
+from django.contrib.gis.geos        import Polygon
+from django.contrib                 import messages
 from django.http                    import JsonResponse
 from django.shortcuts               import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from authentication.decorators      import supervisor_required
-from supervisor.forms               import NodeForm, ParcelleForm, ProjectForm
-from supervisor.models.project      import Project
-from supervisor.models.parcelle     import Parcelle 
-from django.contrib                 import messages
-from django.db.models               import Count, Value
 from django.db.models.functions     import Concat
-from django.contrib.gis.geos        import Polygon
-from supervisor.models.node         import Node
 from django.contrib.gis.geos        import Point
-import json
+from supervisor.models.parcelle     import Parcelle 
+from supervisor.models.project      import Project
+from supervisor.forms               import ProjectForm
+from supervisor.forms               import ParcelleForm
+from supervisor.forms               import NodeForm
 
 
 

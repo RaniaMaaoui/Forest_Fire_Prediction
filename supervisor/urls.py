@@ -25,7 +25,6 @@ urlpatterns = [
     path('get_parcelles_with_nodes_for_project/', views.get_parcelles_with_nodes_for_project, name='get_parcelles_with_nodes_for_project'),
     path('get_project_details/<int:project_id>/', views.get_project_details, name='get_project_details'),
     path('update_parcels_nodes/', views.update_parcels_nodes, name='update_parcels_nodes'),
-    path('noeuds_list/', views.noeuds, name='noeuds'),
 ]
 
 
