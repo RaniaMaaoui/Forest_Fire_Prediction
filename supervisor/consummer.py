@@ -1,10 +1,11 @@
 import json
-import paho.mqtt.client as mqtt
+import paho.mqtt.client         as mqtt
 from channels.generic.websocket import AsyncWebsocketConsumer
-from supervisor.models.node import Node
-from supervisor.models.data import Data
-from django.utils import timezone
-from asgiref.sync import async_to_sync
+from supervisor.models.node     import Node
+from supervisor.models.data     import Data
+from django.utils               import timezone
+from asgiref.sync               import async_to_sync
+
 
 class MQTTConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -25,7 +26,6 @@ class MQTTConsumer(AsyncWebsocketConsumer):
         if text_data:
             try:
                 data = json.loads(text_data)
-                print("Received data:", data)
                 await self.process_data(data)
             except json.JSONDecodeError:
                 print("Invalid JSON received")
@@ -43,13 +43,13 @@ class MQTTConsumer(AsyncWebsocketConsumer):
         
         if 'uplink_message' in parsed_json and 'decoded_payload' in parsed_json['uplink_message']:
             decoded_payload = parsed_json["uplink_message"]["decoded_payload"]
-            temperature = decoded_payload.get("temperature", "N/A")
-            humidity = decoded_payload.get("humidity", "N/A")
-            gaz = decoded_payload.get("gaz", "N/A")
-            pressure = decoded_payload.get("pressur", "N/A")
-            detection = decoded_payload.get("detection", "N/A")
-            rssi = parsed_json["uplink_message"]["rx_metadata"][0].get("rssi", "N/A")
-            device_id = parsed_json["end_device_ids"]["device_id"]
+            temperature     = decoded_payload.get("temperature", "N/A")
+            humidity        = decoded_payload.get("humidity", "N/A")
+            gaz             = decoded_payload.get("gaz", "N/A")
+            pressure        = decoded_payload.get("pressur", "N/A")
+            detection       = decoded_payload.get("detection", "N/A")
+            rssi            = parsed_json["uplink_message"]["rx_metadata"][0].get("rssi", "N/A")
+            device_id       = parsed_json["end_device_ids"]["device_id"]
 
             try:
                 nodes = Node.objects.filter(reference=device_id)

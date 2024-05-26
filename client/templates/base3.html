@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="{% static 'assets/css/dark.min.css' %}">
     <!--* Customizer Css -->
     <link rel="stylesheet" href="{% static 'assets/css/customizer.min.css' %}">
+    <!--* Notification Css -->
+    <link rel="stylesheet" href="{% static 'assets/css/notification.css' %}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
@@ -26,7 +28,6 @@
     {% block head %}
 
     {% endblock %}
-
 
 </head>
 <body>
@@ -109,7 +110,8 @@
         </div>
         <div class="sidebar-footer"></div>
     </aside>
-
+   
+    
     {% block content %}
 
     {% endblock %}
@@ -296,14 +298,13 @@
         <script src="{% static 'assets/vendor/aos/dist/aos.js' %}"></script>
         <!--* App Script -->
         <script src="{% static 'assets/js/hope-ui.js' %}" defer></script>
-
+        <!--* Notification Script -->
+        <script src="{% static 'assets/js/notification.js' %}"></script>
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
         <script src="{% static 'assets/js/map.js' %}"></script>
 
-        <script src="{% static 'assets/js/charts/temperature.js' %}"></script>
-        <script src="{% static 'assets/js/charts/humidity.js' %}"></script>
-        <script src="{% static 'assets/js/charts/gas.js' %}"></script>  
-
+        
     {% block scripts %}
 
     {% endblock %}

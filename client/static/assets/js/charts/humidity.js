@@ -1,58 +1,147 @@
-var ctxHum = document.getElementById('humidityChart').getContext('2d');
-var humidityChart = new Chart(ctxHum, {
-    type: 'line',
-    data: {
-    labels: ['0h', '1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'],
-    datasets: [{
-        label: 'Daily Humidity',
-        data: [80, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 69, 70, 70, 69, 67, 68, 65, 60, 59, 58, 57, 56],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
-        fill: true,  // Enable fill
-        tension: 0.1
-    }]
-    },
-    options: {
-    scales: {
-        x: {
-        title: {
-            display: true,
-            text: 'Hours'
-        }
-        },
-        y: {
-        title: {
-            display: true,
-            text: 'Humidity (%)'
-        },
-        suggestedMin: 50,
-        suggestedMax: 100
-        }
-    },
-    plugins: {
-        legend: {
-        display: true,
-        position: 'top',
-        },
-        title: {
-        display: true,
-        text: 'Daily Humidity'
-        },
-        tooltip: {
-        callbacks: {
-            label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) {
-                label += ': ';
-            }
-            if (context.parsed.y !== null) {
-                label += context.parsed.y + '%';
-            }
-            return label;
-            }
-        }
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    const humidityChartElement = document.querySelector('.card-header[data-project-id][data-node-id]');
+    if (!humidityChartElement) {
+        console.error('Element avec project-id et node-id non trouvé.');
+        return;
     }
+
+    const projectId = humidityChartElement.getAttribute('data-project-id');
+    const nodeId = humidityChartElement.getAttribute('data-node-id');
+
+    if (!projectId || !nodeId) {
+        console.error('projectId ou nodeId non trouvé dans les attributs de l\'élément.');
+        return;
     }
+
+    const ctxHumidity = document.getElementById('humidityChart').getContext('2d');
+    const humidityChart = new Chart(ctxHumidity, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Humidity (%) per Hour',
+                data: [],
+                backgroundColor: 'rgba(0, 255, 123, 0.2)',
+                borderColor: 'rgba(0, 255, 123, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'hour',
+                        stepSize: 1,
+                        displayFormats: {
+                            hour: 'HH:mm'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time (Hourly Intervals)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Humidity (%)'
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Humidity (%) per Hour'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '%';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const url = `/dashboard_client/node_detail/${projectId}/${nodeId}/`;
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const labels = data.humidity.map(entry => new Date(entry.interval));
+        const humidity = data.humidity.map(entry => entry.humidity);
+
+        // Vérifier les dates
+        labels.forEach(label => {
+            if (isNaN(label)) {
+                console.error('Date incorrecte détectée:', label);
+            }
+        });
+
+        humidityChart.data.labels = labels;
+        humidityChart.data.datasets[0].data = humidity;
+        humidityChart.update();
+    })
+    .catch(error => console.error('Error fetching humidity data:', error));
+
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.message === 'MQTT data received') {
+            const newData = data.data;
+            const newLabel = new Date(newData.timestamp);
+            const newHumidity = newData.humidity;
+
+            if (!isNaN(newLabel)) {
+                // Add new data
+                humidityChart.data.labels.push(newLabel);
+                humidityChart.data.datasets[0].data.push(newHumidity);
+
+                // Remove data older than 24 hours
+                const now = new Date();
+                while (humidityChart.data.labels.length > 0 && (now - new Date(humidityChart.data.labels[0])) > 24 * 60 * 60 * 1000) {
+                    humidityChart.data.labels.shift();
+                    humidityChart.data.datasets[0].data.shift();
+                }
+
+                humidityChart.update();
+            } else {
+                console.error('Date incorrecte détectée:', newLabel);
+            }
+        }
+    };
+
+    socket.onopen = function(event) {
+        console.log("WebSocket connection established");
+    };
+
+    socket.onclose = function(event) {
+        console.log("WebSocket connection closed");
+    };
+
+    socket.onerror = function(error) {
+        console.error("WebSocket error: ", error);
+    };
 });

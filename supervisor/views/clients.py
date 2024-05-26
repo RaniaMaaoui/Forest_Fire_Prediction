@@ -2,12 +2,14 @@ from django.http import HttpResponse
 from django.shortcuts                   import render, redirect, get_object_or_404
 from django.contrib.auth.decorators     import login_required
 from django.contrib                     import messages
+from authentication.decorators          import supervisor_required
 from supervisor.forms                   import ClientForm
 from client.models                      import Client
 import json
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def list_clients(request):
     clients = Client.objects.all()
     form = ClientForm()
@@ -19,6 +21,7 @@ def list_clients(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def add_client(request):
     if request.method == 'POST':
         form = ClientForm(request.POST, request.FILES)
@@ -35,6 +38,7 @@ def add_client(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def update_client(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == 'POST':
@@ -62,6 +66,7 @@ def update_client(request, pk):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def delete_client(request, pk):
     client = get_object_or_404(Client, pk=pk)
     client.delete()

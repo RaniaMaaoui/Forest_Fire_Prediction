@@ -1,58 +1,149 @@
-var ctxTemp = document.getElementById('temperatureChart').getContext('2d');
-var temperatureChart = new Chart(ctxTemp, {
-    type: 'line',
-    data: {
-    labels: ['0h', '1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'],
-    datasets: [{
-        label: 'Daily Temperatures',
-        data: [25, 25, 27, 27, 28, 30, 28, 28, 27, 29, 30, 27, 28, 30, 28, 26, 24, 22, 20, 18, 18, 18, 17, 18],
-        backgroundColor: 'rgba(0, 123, 255, 0.2)',
-        borderColor: 'rgba(0, 123, 255, 1)',
-        borderWidth: 2,
-        fill: true,  // Enable fill
-        tension: 0.1
-    }]
-    },
-    options: {
-    scales: {
-        x: {
-        title: {
-            display: true,
-            text: 'Hours'
-        }
-        },
-        y: {
-        title: {
-            display: true,
-            text: 'Temperature (°C)'
-        },
-        suggestedMin: 5,
-        suggestedMax: 45
-        }
-    },
-    plugins: {
-        legend: {
-        display: true,
-        position: 'top',
-        },
-        title: {
-        display: true,
-        text: 'Daily Temperatures'
-        },
-        tooltip: {
-        callbacks: {
-            label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) {
-                label += ': ';
-            }
-            if (context.parsed.y !== null) {
-                label += context.parsed.y + '°C';
-            }
-            return label;
-            }
-        }
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    const temperatureChartElement = document.querySelector('.card-header[data-project-id][data-node-id]');
+    if (!temperatureChartElement) {
+        console.error('Element avec project-id et node-id non trouvé.');
+        return;
     }
+
+    const projectId = temperatureChartElement.getAttribute('data-project-id');
+    const nodeId = temperatureChartElement.getAttribute('data-node-id');
+
+    if (!projectId || !nodeId) {
+        console.error('projectId ou nodeId non trouvé dans les attributs de l\'élément.');
+        return;
     }
+
+    console.log(`projectId: ${projectId}, nodeId: ${nodeId}`);
+
+    const ctxTemp = document.getElementById('temperatureChart').getContext('2d');
+    const temperatureChart = new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Temperature (°C) per Hour',
+                data: [],
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'hour',
+                        stepSize: 1,
+                        displayFormats: {
+                            hour: 'HH:mm'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time (Hourly Intervals)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    },
+                    suggestedMin: 5,
+                    suggestedMax: 45
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Temperature (°C) per Hour'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '°C';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const url = `/dashboard_client/node_detail/${projectId}/${nodeId}/`;
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const labels = data.temperatures.map(entry => new Date(entry.interval));
+        const temperatures = data.temperatures.map(entry => entry.temperature);
+
+        // Vérifier les dates
+        labels.forEach(label => {
+            if (isNaN(label)) {
+                console.error('Date incorrecte détectée:', label);
+            }
+        });
+
+        temperatureChart.data.labels = labels;
+        temperatureChart.data.datasets[0].data = temperatures;
+        temperatureChart.update();
+    })
+    .catch(error => console.error('Error fetching temperature data:', error));
+
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.message === 'MQTT data received') {
+            const newData = data.data;
+            const newLabel = new Date(newData.timestamp);
+            const newTemperature = newData.temperature;
+
+            if (!isNaN(newLabel)) {
+                // Add new data
+                temperatureChart.data.labels.push(newLabel);
+                temperatureChart.data.datasets[0].data.push(newTemperature);
+
+                // Remove data older than 24 hours
+                const now = new Date();
+                while (temperatureChart.data.labels.length > 0 && (now - new Date(temperatureChart.data.labels[0])) > 24 * 60 * 60 * 1000) {
+                    temperatureChart.data.labels.shift();
+                    temperatureChart.data.datasets[0].data.shift();
+                }
+
+                temperatureChart.update();
+            } else {
+                console.error('Date incorrecte détectée:', newLabel);
+            }
+        }
+    };
+
+    socket.onopen = function(event) {
+        console.log("WebSocket connection established");
+    };
+
+    socket.onclose = function(event) {
+        console.log("WebSocket connection closed");
+    };
+
+    socket.onerror = function(error) {
+        console.error("WebSocket error: ", error);
+    };
 });

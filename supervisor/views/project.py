@@ -1,6 +1,7 @@
 from django.http                    import JsonResponse
 from django.shortcuts               import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from authentication.decorators      import supervisor_required
 from supervisor.forms               import NodeForm, ParcelleForm, ProjectForm
 from supervisor.models.project      import Project
 from supervisor.models.parcelle     import Parcelle 
@@ -12,7 +13,10 @@ from supervisor.models.node         import Node
 from django.contrib.gis.geos        import Point
 import json
 
+
+
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def list_project(request):
     client_id = request.GET.get('client_id')
     projects_by_client = Project.objects.annotate(
@@ -30,6 +34,7 @@ def list_project(request):
     })
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def add_project(request):
     form = ProjectForm(request.POST or None, request.FILES or None)
     data = {'latitude': None, 'longitude': None}
@@ -98,6 +103,7 @@ def add_project(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def get_project_details(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
@@ -112,6 +118,7 @@ def get_project_details(request, project_id):
         return JsonResponse({'error': 'Project not found'}, status=404)
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def update_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
@@ -133,13 +140,18 @@ def update_project(request, project_id):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def delete_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.delete()
     messages.success(request, 'Project deleted successfully.')
     return redirect('supervisor:list_project')
 
+
+
+
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def parcelle_create(request):
     if request.method == 'POST':
         form = ParcelleForm(request.POST)
@@ -210,6 +222,7 @@ def parcelle_create(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def get_parcelles_for_project(request):
     project_id = request.GET.get('project_id')
     if project_id:
@@ -226,6 +239,7 @@ def get_parcelles_for_project(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def node_create(request):
     if request.method == 'POST':
         node_form = NodeForm(request.POST)
@@ -282,6 +296,7 @@ def node_create(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def get_parcelles_with_nodes_for_project(request):
     project_id = request.GET.get('project_id')
     if project_id:
@@ -311,6 +326,7 @@ def get_parcelles_with_nodes_for_project(request):
 
 
 @login_required(login_url='supervisor_login')
+@supervisor_required
 def update_parcels_nodes(request):
     if request.method == 'POST':
         data = json.loads(request.body)

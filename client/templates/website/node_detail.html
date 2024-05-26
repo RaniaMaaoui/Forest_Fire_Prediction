@@ -241,21 +241,21 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card" data-aos="fade-up" data-aos-delay="800">
-                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center" data-project-id="{{ project.polygon_id }}" data-node-id="{{ node.id }}">
                                     <canvas id="temperatureChart" width="400" height="200"></canvas>
                                 </div>
-                            </div>
+                            </div>                                                        
                         </div>
                         <div class="col-md-12">
                             <div class="card" data-aos="fade-up" data-aos-delay="850">
-                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center" data-project-id="{{ project.polygon_id }}" data-node-id="{{ node.id }}">
                                     <canvas id="humidityChart" width="400" height="200"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="card" data-aos="fade-up" data-aos-delay="900">
-                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center">
+                                <div class="flex-wrap card-header d-flex justify-content-between align-items-center" data-project-id="{{ project.polygon_id }}" data-node-id="{{ node.id }}">
                                     <canvas id="gasChart" width="400" height="200"></canvas>
                                 </div>
                             </div>
@@ -344,11 +344,11 @@
 {% block scripts %}
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+     document.addEventListener('DOMContentLoaded', function() {
         const nodeData = loadNodeDataFromLocalStorage();
 
         // Initialiser les éléments avec les données sauvegardées
-        document.getElementById('nodeReference').innerText = nodeData.ref || 'N/A';
+        document.getElementById('nodeReference').innerText = nodeData.device_id || 'N/A';
         document.getElementById('nodeDutyCycle').innerText = nodeData.duty_cycle || 'N/A';
         document.getElementById('nodeRSSI').innerText = nodeData.rssi || 'N/A';
         document.getElementById('nodeBatteryLevel').innerText = nodeData.battery_level || 'N/A';
@@ -357,7 +357,7 @@
         document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
         document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
         document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
-        document.getElementById('gas').innerText = nodeData.gas || 'N/A';
+        document.getElementById('gas').innerText = nodeData.gaz || 'N/A';
 
         const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
 
@@ -374,7 +374,7 @@
                 document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
                 document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
                 document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
-                document.getElementById('gas').innerText = nodeData.gas || 'N/A';
+                document.getElementById('gas').innerText = nodeData.gaz || 'N/A';
 
                 saveNodeDataToLocalStorage(nodeData);
             }
@@ -402,5 +402,13 @@
         }
     });
 </script>
+
+    <!-- Moment.js and Chart.js adapter for Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^0.1.0"></script>
+
+    <script src="{% static 'assets/js/charts/temperature.js' %}"></script>
+    <script src="{% static 'assets/js/charts/humidity.js' %}"></script>
+    <script src="{% static 'assets/js/charts/gas.js' %}"></script>  
 
 {% endblock %}

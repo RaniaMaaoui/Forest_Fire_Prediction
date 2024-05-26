@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-
             let defaultLat = 0;
             let defaultLng = 0;
 
@@ -42,16 +41,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     parcelle.nodes.forEach(node => {
                         const marker = L.marker([node.latitude, node.longitude]);
-                        const nodeData = storedNodeData[node.ref] || {};
+                        const nodeData = storedNodeData[node.ref] || node.last_data || {};
                         const popupContent = `
-                            <b>Name:</b>${node.name}<br>
-                            <b>Ref:</b>${node.ref}<br>
-                            <b>Temperature:</b>${nodeData.temperature || 'N/A'} °C<br>
-                            <b>Humidity:</b>${nodeData.humidity || 'N/A'} %<br>
-                            <b>Gaz:</b>${nodeData.gaz || 'N/A'} ppm<br>
-                            <b>Pressure:</b>${nodeData.pressure || 'N/A'} hPa<br>
-                            <b>Detection:</b>${nodeData.detection || 'N/A'}<br>
-                            <b>RSSI:</b>${nodeData.rssi || 'N/A'}
+                            <div class="node-popup">
+                                <div class="node-label">Node</div><br>
+                                <b>Name:</b> ${node.name}<br>
+                                <b>Ref:</b> ${node.ref}<br>
+                                <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
+                                <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
+                                <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                                <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
+                                <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
+                                <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
+                                <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
+                                <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
+                                <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                            </div>
                         `;
                         marker.bindPopup(popupContent);
                         marker.addTo(map);
@@ -77,13 +82,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (nodeMarkers) {
                         nodeMarkers.forEach(marker => {
                             const updatedContent = `
-                                <b>Ref:</b>${nodeData.device_id}<br>
-                                <b>Temperature:</b>${nodeData.temperature} °C<br>
-                                <b>Humidity:</b>${nodeData.humidity} %<br>
-                                <b>Gaz:</b>${nodeData.gaz} ppm<br>
-                                <b>Pressure:</b>${nodeData.pressure} hPa<br>
-                                <b>Detection:</b>${nodeData.detection}<br>
-                                <b>RSSI:</b>${nodeData.rssi}
+                                <div class="node-popup">
+                                    <div class="node-label">Node</div><br>
+                                    <b>Ref:</b> ${nodeData.device_id}<br>
+                                    <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
+                                    <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
+                                    <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                                    <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
+                                    <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
+                                    <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
+                                    <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
+                                    <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
+                                    <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                                </div>
                             `;
                             marker.setPopupContent(updatedContent);
                         });
@@ -103,6 +114,38 @@ document.addEventListener('DOMContentLoaded', function() {
             socket.onerror = function(error) {
                 console.error("WebSocket error: ", error);
             };
+
+            document.querySelectorAll('.locate-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const lat = parseFloat(this.getAttribute('data-lat'));
+                    const lng = parseFloat(this.getAttribute('data-lng'));
+                    const name = this.getAttribute('data-name');
+                    const ref = this.getAttribute('data-ref');
+                    const nodeData = storedNodeData[ref] || {};
+                    const popupContent = `
+                        <div class="node-popup">
+                            <div class="node-label">Node</div><br>
+                            <b>Name:</b> ${name}<br>
+                            <b>Ref:</b> ${ref}<br>
+                            <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
+                            <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
+                            <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                            <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
+                            <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
+                            <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
+                            <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
+                            <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
+                            <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                        </div>
+                    `;
+                    const tempMarker = L.marker([lat, lng]).addTo(map).bindPopup(popupContent).openPopup();
+                    map.setView([lat, lng], 18);  // Ajuster le niveau de zoom
+                    setTimeout(() => {
+                        const popup = tempMarker.getPopup().getElement();
+                        popup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 200);  // Délai pour s'assurer que le popup est bien ouvert
+                });
+            });
 
         })
         .catch(error => console.error('Error fetching parcels:', error));

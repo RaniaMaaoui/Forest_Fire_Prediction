@@ -2,7 +2,28 @@
 {% load static %}
 
 {% block head %}
-    
+    <style>
+        .node-popup {
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: left;
+        }
+        .node-popup b {
+            font-weight: bold;
+            color: #333;
+        }
+        .node-popup .highlight {
+            color: blue;
+        }
+        .node-popup .node-label {
+            display: inline-block;
+            background-color: Blue;
+            color: black;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 12px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
