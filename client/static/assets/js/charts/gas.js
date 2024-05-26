@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderColor: 'rgba(255, 0, 0, 1)',
                 borderWidth: 2,
                 fill: true,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 3,
+                pointBackgroundColor: 'rgba(255, 0, 0, 1)'
             }]
         },
         options: {
@@ -92,15 +94,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const labels = data.gas.map(entry => new Date(entry.interval));
         const gas = data.gas.map(entry => entry.gas);
 
-        // Vérifier les dates
+        // Vérifier et trier les dates
         labels.forEach(label => {
-            if (isNaN(label)) {
+            if (isNaN(label.getTime())) {
                 console.error('Date incorrecte détectée:', label);
             }
         });
 
-        gasChart.data.labels = labels;
-        gasChart.data.datasets[0].data = gas;
+        // Trier les labels et les données
+        const sortedData = labels.map((label, index) => ({ label, gas: gas[index] }))
+                                .sort((a, b) => a.label - b.label);
+
+        gasChart.data.labels = sortedData.map(entry => entry.label);
+        gasChart.data.datasets[0].data = sortedData.map(entry => entry.gas);
         gasChart.update();
     })
     .catch(error => console.error('Error fetching gas data:', error));
@@ -114,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const newLabel = new Date(newData.timestamp);
             const newGas = newData.gas;
 
-            if (!isNaN(newLabel)) {
+            if (!isNaN(newLabel.getTime())) {
                 // Add new data
                 gasChart.data.labels.push(newLabel);
                 gasChart.data.datasets[0].data.push(newGas);
@@ -125,6 +131,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     gasChart.data.labels.shift();
                     gasChart.data.datasets[0].data.shift();
                 }
+
+                // Trier les données après ajout
+                const sortedData = gasChart.data.labels.map((label, index) => ({ label, gas: gasChart.data.datasets[0].data[index] }))
+                                                       .sort((a, b) => a.label - b.label);
+
+                gasChart.data.labels = sortedData.map(entry => entry.label);
+                gasChart.data.datasets[0].data = sortedData.map(entry => entry.gas);
 
                 gasChart.update();
             } else {

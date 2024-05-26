@@ -119,6 +119,8 @@ def get_project_details(request, project_id):
     except Project.DoesNotExist:
         return JsonResponse({'error': 'Project not found'}, status=404)
 
+
+
 @login_required(login_url='supervisor_login')
 @supervisor_required
 def update_project(request, project_id):
@@ -128,8 +130,19 @@ def update_project(request, project_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Project updated successfully.')
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                project_data = {
+                    'pk': project.pk,
+                    'name': project.name,
+                    'description': project.description,
+                    'start_date': project.start_date,
+                    'end_date': project.end_date,
+                }
+                return JsonResponse({'success': True, 'project': project_data})
             return redirect('supervisor:list_project')
         else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors})
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ProjectForm(instance=project)
@@ -139,6 +152,7 @@ def update_project(request, project_id):
         'update': True,
         'project': project,
     })
+
 
 
 @login_required(login_url='supervisor_login')

@@ -27,7 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderColor: 'rgba(0, 123, 255, 1)',
                 borderWidth: 2,
                 fill: true,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 3,
+                pointBackgroundColor: 'rgba(0, 123, 255, 1)'
             }]
         },
         options: {
@@ -94,15 +96,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const labels = data.temperatures.map(entry => new Date(entry.interval));
         const temperatures = data.temperatures.map(entry => entry.temperature);
 
-        // Vérifier les dates
+        // Vérifier et trier les dates
         labels.forEach(label => {
-            if (isNaN(label)) {
+            if (isNaN(label.getTime())) {
                 console.error('Date incorrecte détectée:', label);
             }
         });
 
-        temperatureChart.data.labels = labels;
-        temperatureChart.data.datasets[0].data = temperatures;
+        // Trier les labels et les données
+        const sortedData = labels.map((label, index) => ({ label, temperature: temperatures[index] }))
+                                .sort((a, b) => a.label - b.label);
+
+        temperatureChart.data.labels = sortedData.map(entry => entry.label);
+        temperatureChart.data.datasets[0].data = sortedData.map(entry => entry.temperature);
         temperatureChart.update();
     })
     .catch(error => console.error('Error fetching temperature data:', error));
@@ -116,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const newLabel = new Date(newData.timestamp);
             const newTemperature = newData.temperature;
 
-            if (!isNaN(newLabel)) {
+            if (!isNaN(newLabel.getTime())) {
                 // Add new data
                 temperatureChart.data.labels.push(newLabel);
                 temperatureChart.data.datasets[0].data.push(newTemperature);
@@ -127,6 +133,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     temperatureChart.data.labels.shift();
                     temperatureChart.data.datasets[0].data.shift();
                 }
+
+                // Trier les données après ajout
+                const sortedData = temperatureChart.data.labels.map((label, index) => ({ label, temperature: temperatureChart.data.datasets[0].data[index] }))
+                                                                .sort((a, b) => a.label - b.label);
+
+                temperatureChart.data.labels = sortedData.map(entry => entry.label);
+                temperatureChart.data.datasets[0].data = sortedData.map(entry => entry.temperature);
 
                 temperatureChart.update();
             } else {
