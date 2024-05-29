@@ -2,7 +2,7 @@ from django.shortcuts                   import get_object_or_404
 from django.contrib.auth.decorators     import login_required
 from django.http                        import JsonResponse
 from authentication.decorators          import client_required
-from supervisor.models.data import Data
+from supervisor.models.data             import Data
 from supervisor.models.project          import Project
 from supervisor.models.parcelle         import Parcelle
 from supervisor.models.node             import Node

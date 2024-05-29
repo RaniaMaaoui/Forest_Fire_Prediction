@@ -11,6 +11,9 @@ class Data(models.Model):
     detection       = models.BigIntegerField(null=True)
     wind            = models.FloatField(default=0, null=True)
     rain            = models.FloatField(default=0, null=True)
+    ffmc            = models.FloatField(null=True)
+    isi             = models.FloatField(null=True)
+    fwi             = models.FloatField(null=True)
     published_date  = models.DateTimeField(blank=True, null=True)
     node            = models.ForeignKey(Node, on_delete=models.CASCADE, null=True, related_name='datas')
 

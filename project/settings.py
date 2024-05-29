@@ -75,7 +75,7 @@ TEMPLATES = [
             ],
         },
     },
-]
+]   
 
 #* Configuration WSGI et ASGI
 WSGI_APPLICATION = 'project.wsgi.application'

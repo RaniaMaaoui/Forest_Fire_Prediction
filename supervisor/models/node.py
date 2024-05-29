@@ -7,7 +7,7 @@ class Node(models.Model):
     position        = models.PointField(null=True)
     latitude        = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude       = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    reference       =  models.CharField(max_length=50, null=True)
+    reference       = models.CharField(max_length=50, null=True)
     node_range      = models.BigIntegerField(null=True,blank=True)
     sensors         = models.CharField(max_length=50, null=True)
     RSSI            = models.BigIntegerField(null=True)

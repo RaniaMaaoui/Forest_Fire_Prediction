@@ -191,7 +191,8 @@
                                 <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700" style="width: 278.25px; background-color: #f5f2f2;">
                                     <div class="card-body" style="width: 247px;">
                                         <h5 class="card-title">Node-{{ node.name }}</h5>
-                                        <p>Ref: {{ node.ref }}</p>
+                                        <p>ID Parcelle:</p>
+                                        <p>{{ node.ref }}</p>
                                         <p>Node ID: {{ node.id }}</p>
                                         <div class="d-flex justify-content-between">
                                             <button class="btn btn-success custom-btn locate-btn" data-lat="{{ node.latitude }}" data-lng="{{ node.longitude }}" data-name="{{ node.name }}" data-ref="{{ node.ref }}">Locate</button>

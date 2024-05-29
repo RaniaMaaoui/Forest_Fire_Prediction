@@ -273,12 +273,10 @@
                                         </div>
                                         <div class="card-body">
                                             <p><strong>Node Name:</strong> <span id="nodeName">{{ node.name }}</span></p>
-                                            <p><strong>Reference:</strong> <span id="nodeReference">{{ node.ref }}</span></p>
+                                            <p><strong>ID Parcelle:</strong> <span id="nodeReference">{{ node.ref }}</span></p>
                                             <p><strong>Position:</strong> <span id="nodePosition">{{ node.latitude }}, {{ node.longitude }}</span></p>
                                             <p><strong>Sensors:</strong> <span id="nodeSensors">{{ node.sensors }}</span></p>
-                                            <p><strong>Duty Cycle:</strong> <span id="nodeDutyCycle">{{ node.duty_cycle }}</span></p>
                                             <p><strong>RSSI:</strong> <span id="nodeRSSI">{{ node.RSSI }}</span></p>
-                                            <p><strong>Battery Level:</strong> <span id="nodeBatteryLevel">{{ node.battery_level }}</span></p>
                                         </div>
                                     </div>
                                 </div> 
@@ -296,8 +294,7 @@
                                             <p><strong>Humidity:</strong> <span id="humidity">N/A</span>%</p>
                                             <p><strong>Pressure:</strong> <span id="pressure">N/A</span> hPa</p>
                                             <p><strong>Gas Concentration:</strong> <span id="gas">N/A</span> ppm</p>
-                                            <p><strong>Wind Speed:</strong> 2.57 km/h</p>
-                                            <p><strong>Rain Volume:</strong> 0.0 mm</p>
+                                            <p><strong>Wind Speed:</strong> <span id="wind">N/A</span> km/h</p>
                                         </div>
                                     </div>
                                 </div>
@@ -348,16 +345,15 @@
         const nodeData = loadNodeDataFromLocalStorage();
 
         // Initialiser les éléments avec les données sauvegardées
-        document.getElementById('nodeReference').innerText = nodeData.device_id || 'N/A';
-        document.getElementById('nodeDutyCycle').innerText = nodeData.duty_cycle || 'N/A';
-        document.getElementById('nodeRSSI').innerText = nodeData.rssi || 'N/A';
-        document.getElementById('nodeBatteryLevel').innerText = nodeData.battery_level || 'N/A';
+        document.getElementById('nodeReference').innerText  = nodeData.device_id || 'N/A';
+        document.getElementById('nodeRSSI').innerText       = nodeData.rssi || 'N/A';
         
         // Ajouter les valeurs de température, humidité, pression et gaz
-        document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
-        document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
-        document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
-        document.getElementById('gas').innerText = nodeData.gaz || 'N/A';
+        document.getElementById('temperature').innerText    = nodeData.temperature || 'N/A';
+        document.getElementById('humidity').innerText       = nodeData.humidity || 'N/A';
+        document.getElementById('pressure').innerText       = nodeData.pressure || 'N/A';
+        document.getElementById('wind').innerText           = nodeData.wind_speed || 'N/A';
+        document.getElementById('gas').innerText            = nodeData.gaz || 'N/A';
 
         const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
 
@@ -365,16 +361,17 @@
             const data = JSON.parse(event.data);
             if (data.message === 'MQTT data received') {
                 const nodeData = data.data;
-                document.getElementById('nodeReference').innerText = nodeData.device_id || 'N/A';
-                document.getElementById('nodeDutyCycle').innerText = nodeData.duty_cycle || 'N/A';
-                document.getElementById('nodeRSSI').innerText = nodeData.rssi || 'N/A';
-                document.getElementById('nodeBatteryLevel').innerText = nodeData.battery_level || 'N/A';
+                document.getElementById('nodeReference').innerText  = nodeData.device_id || 'N/A';
+                document.getElementById('nodeDutyCycle').innerText  = nodeData.duty_cycle || 'N/A';
+                document.getElementById('nodeRSSI').innerText       = nodeData.rssi || 'N/A';
                 
                 // Mettre à jour les valeurs de température, humidité, pression et gaz
-                document.getElementById('temperature').innerText = nodeData.temperature || 'N/A';
-                document.getElementById('humidity').innerText = nodeData.humidity || 'N/A';
-                document.getElementById('pressure').innerText = nodeData.pressure || 'N/A';
-                document.getElementById('gas').innerText = nodeData.gaz || 'N/A';
+                document.getElementById('temperature').innerText    = nodeData.temperature || 'N/A';
+                document.getElementById('humidity').innerText       = nodeData.humidity || 'N/A';
+                document.getElementById('pressure').innerText       = nodeData.pressure || 'N/A';
+                document.getElementById('gas').innerText            = nodeData.gaz || 'N/A';
+                document.getElementById('wind').innerText           = nodeData.wind_speed || 'N/A';
+
 
                 saveNodeDataToLocalStorage(nodeData);
             }

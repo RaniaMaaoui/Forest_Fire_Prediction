@@ -1,11 +1,11 @@
 import json
-import paho.mqtt.client         as mqtt
+import paho.mqtt.client as mqtt
 from channels.generic.websocket import AsyncWebsocketConsumer
-from supervisor.models.node     import Node
-from supervisor.models.data     import Data
-from django.utils               import timezone
-from asgiref.sync               import async_to_sync
-
+from supervisor.models.node import Node
+from supervisor.models.data import Data
+from django.utils import timezone
+from asgiref.sync import async_to_sync
+from .fwi import FWI
 
 class MQTTConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -51,16 +51,36 @@ class MQTTConsumer(AsyncWebsocketConsumer):
             rssi            = parsed_json["uplink_message"]["rx_metadata"][0].get("rssi", "N/A")
             device_id       = parsed_json["end_device_ids"]["device_id"]
 
+            fwi = FWI()
+            wind = fwi.calculate_wind(temperature, humidity, pressure)
+
             try:
                 nodes = Node.objects.filter(reference=device_id)
                 if nodes.exists():
                     for node in nodes:
+                        try:
+                            last_data = Data.objects.filter(node=node).latest('published_date')
+                            ffmc_prev = last_data.ffmc if last_data else 85  # Utiliser une valeur par défaut si aucune donnée précédente
+                        except Data.DoesNotExist:
+                            ffmc_prev = 85  # Utiliser une valeur par défaut si aucune donnée précédente
+
+                        ffmc_value = fwi.FFMC(temperature, humidity, wind, 0, ffmc_prev)
+                        isi_value = fwi.ISI(wind, ffmc_value)
+                        fwi_value = fwi.FWI(isi_value)  # Utiliser uniquement ISI pour le calcul de FWI
+                        
+                        node.FWI = fwi_value
+                        node.save()
+
                         data = Data(
                             temperature=temperature,
                             humidity=humidity,
                             pressur=pressure,
                             gaz=gaz,
                             detection=detection,
+                            wind=wind,
+                            ffmc=ffmc_value,
+                            isi=isi_value,
+                            fwi=fwi_value,
                             published_date=timezone.now(),
                             node=node
                         )
@@ -78,6 +98,8 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                     'pressure': pressure,
                     'detection': detection,
                     'rssi': rssi,
+                    'wind_speed': wind,
+                    'fwi': fwi_value, 
                     'device_id': device_id
                 })
         else:

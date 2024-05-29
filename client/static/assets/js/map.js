@@ -2,6 +2,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const mapContainer = document.getElementById('mapContainer');
     const url = mapContainer ? mapContainer.getAttribute('data-url') : null;
 
+    function getColor(fwi) {
+        if (fwi <= 7) {
+            return 'green'; // Low risk
+        } else if (fwi <= 16) {
+            return 'yellow'; // Moderate risk
+        } else if (fwi <= 25) {
+            return 'orange'; // High risk
+        } else if (fwi <= 31) {
+            return 'red'; // Very high risk
+        } else {
+            return 'purple'; // Extreme risk
+        }
+    }
+
+    function getPredictionMessage(fwi) {
+        if (fwi <= 7) {
+            return 'Low risk';
+        } else if (fwi <= 16) {
+            return 'Moderate risk';
+        } else if (fwi <= 25) {
+            return 'High risk';
+        } else if (fwi <= 31) {
+            return 'Very high risk';
+        } else {
+            return 'Extreme risk';
+        }
+    }
+
     if (!mapContainer || !url) {
         console.error("Required elements are missing from the DOM.");
         return;
@@ -25,37 +53,49 @@ document.addEventListener('DOMContentLoaded', function() {
             }).addTo(map);
 
             const markers = {};
+            const polygons = {};
             const storedNodeData = loadNodeDataFromLocalStorage();
 
             if (data.parcelles && data.parcelles.length > 0) {
                 const bounds = [];
                 data.parcelles.forEach(parcelle => {
+                    let maxFwi = 0;
+                    parcelle.nodes.forEach(node => {
+                        const nodeData = storedNodeData[node.ref] || node.last_data || {};
+                        const fwi = nodeData.fwi || 0;
+                        if (fwi > maxFwi) {
+                            maxFwi = fwi;
+                        }
+                    });
+
                     const polygon = L.polygon(parcelle.coordinates, {
-                        color: 'blue',
-                        weight: 2,
+                        color: getColor(maxFwi),
+                        weight: 3.5,
                         opacity: 1,
-                        fillOpacity: 0.5
+                        fillOpacity: 0.1,
+                        fillColor: getColor(maxFwi)
                     });
                     polygon.addTo(map);
                     bounds.push(...parcelle.coordinates);
+
+                    polygons[parcelle.id] = polygon;
 
                     parcelle.nodes.forEach(node => {
                         const marker = L.marker([node.latitude, node.longitude]);
                         const nodeData = storedNodeData[node.ref] || node.last_data || {};
                         const popupContent = `
                             <div class="node-popup">
-                                <div class="node-label">Node</div><br>
+                                <div class="node-label" style="background-color: ${getColor(nodeData.fwi || 0)};">Node</div><br>
                                 <b>Name:</b> ${node.name}<br>
-                                <b>Ref:</b> ${node.ref}<br>
+                                <b>ID Parcelle:</b> ${node.ref}<br>
                                 <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                                 <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                                <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                                <b>Prediction result:</b><span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
                                 <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                                 <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                                 <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
                                 <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
-                                <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
-                                <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                                <b>Wind speed:</b> ${nodeData.wind_speed ? nodeData.wind_speed.toFixed(2) : 'N/A'} km/h<br>
                             </div>
                         `;
                         marker.bindPopup(popupContent);
@@ -83,22 +123,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         nodeMarkers.forEach(marker => {
                             const updatedContent = `
                                 <div class="node-popup">
-                                    <div class="node-label">Node</div><br>
-                                    <b>Ref:</b> ${nodeData.device_id}<br>
+                                    <div class="node-label" style="background-color: ${getColor(nodeData.fwi || 0)};">Node</div><br>
+                                    <b>ID Parcelle:</b> ${nodeData.device_id}<br>
                                     <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                                     <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                                    <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                                    <b>Prediction result:</b><span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
                                     <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                                     <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                                     <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
                                     <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
-                                    <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
-                                    <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                                    <b>Wind speed:</b> ${nodeData.wind_speed ? nodeData.wind_speed.toFixed(2) : 'N/A'} km/h<br>
                                 </div>
                             `;
                             marker.setPopupContent(updatedContent);
                         });
                         saveNodeDataToLocalStorage(nodeData.device_id, nodeData);
+                    }
+
+                    for (const parcelleId in polygons) {
+                        if (polygons.hasOwnProperty(parcelleId)) {
+                            const polygon = polygons[parcelleId];
+                            const color = getColor(nodeData.fwi || 0);
+                            polygon.setStyle({ fillColor: color });
+                        }
                     }
                 }
             };
@@ -124,18 +171,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nodeData = storedNodeData[ref] || {};
                     const popupContent = `
                         <div class="node-popup">
-                            <div class="node-label">Node</div><br>
+                            <div class="node-label" style="background-color: ${getColor(nodeData.fwi || 0)};">Node</div><br>
                             <b>Name:</b> ${name}<br>
-                            <b>Ref:</b> ${ref}<br>
+                            <b>ID Parcelle:</b> ${ref}<br>
                             <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                             <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                            <b>Prediction result:</b> ${nodeData.prediction_result || 'N/A'}<br><br>
+                            <b>Prediction result:</b> <span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
                             <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                             <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                             <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
                             <b>Gaz:</b> ${nodeData.gaz || 'N/A'} ppm<br>
-                            <b>Wind speed:</b> ${nodeData.wind_speed || 'N/A'} km/h<br>
-                            <b>Rain volume:</b> ${nodeData.rain_volume || 'N/A'} mm
+                            <b>Wind speed:</b> ${nodeData.wind_speed ? nodeData.wind_speed.toFixed(2) : 'N/A'} km/h<br>
                         </div>
                     `;
                     const tempMarker = L.marker([lat, lng]).addTo(map).bindPopup(popupContent).openPopup();

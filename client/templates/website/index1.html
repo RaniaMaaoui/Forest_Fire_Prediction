@@ -7,21 +7,28 @@
             font-size: 12px;
             line-height: 1.4;
             text-align: left;
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+
         .node-popup b {
             font-weight: bold;
             color: #333;
         }
+
         .node-popup .highlight {
             color: blue;
         }
+
         .node-popup .node-label {
             display: inline-block;
-            background-color: Blue;
-            color: black;
+            color: white;
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 12px;
+            margin-bottom: 5px;
         }
     </style>
 {% endblock %}
@@ -199,7 +206,7 @@
                                                 </svg>
                                             </div>
                                             <div class="progress-detail">
-                                                <h3>26</h3>
+                                                <h3 id="wind">-- km/h</h3>
                                                 <p>Wind Speed</p>
                                                 <i class="fas fa-wind"></i>
                                             </div>
@@ -258,10 +265,11 @@
         const message = data.message;
         const sensorData = data.data;
 
-        document.getElementById("temperature").innerText = sensorData.temperature + " °C";
-        document.getElementById("humidity").innerText = sensorData.humidity + " %";
-        document.getElementById("gas").innerText = sensorData.gaz + " ppm";
-        document.getElementById("pressure").innerText = sensorData.pressure + " hPa";
+        document.getElementById("temperature").innerText    = sensorData.temperature + " °C";
+        document.getElementById("humidity").innerText       = sensorData.humidity + " %";
+        document.getElementById("pressure").innerText       = sensorData.pressure + " hPa";
+        document.getElementById("wind").innerText           = sensorData.wind_speed  + " km/h";
+        document.getElementById("gas").innerText            = sensorData.gaz + " ppm";
     };
 
     socket.onopen = function() {

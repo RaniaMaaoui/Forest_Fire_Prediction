@@ -72,44 +72,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 let drawnItemsMarker = new L.FeatureGroup();
                 map.addLayer(drawnItemsMarker);
 
-                let drawControlPolygon = new L.Control.Draw({
-                    edit: {
-                        featureGroup: drawnItemsPolygon
-                    },
-                    draw: {
-                        polygon: true,
-                        polyline: false,
-                        rectangle: false,
-                        circle: false,
-                        marker: false,
-                        circlemarker: false
-                    }
-                });
-                map.addControl(drawControlPolygon);
+                // let drawControlPolygon = new L.Control.Draw({
+                //     edit: {
+                //         featureGroup: drawnItemsPolygon
+                //     },
+                //     draw: {
+                //         polygon: false,
+                //         polyline: false,
+                //         rectangle: false,
+                //         circle: false,
+                //         marker: false,
+                //         circlemarker: false
+                //     }
+                // });
+                // map.addControl(drawControlPolygon);
 
-                let drawControlMarker = new L.Control.Draw({
-                    edit: {
-                        featureGroup: drawnItemsMarker
-                    },
-                    draw: {
-                        polygon: false,
-                        polyline: false,
-                        rectangle: false,
-                        circle: false,
-                        marker: true,
-                        circlemarker: false
-                    }
-                });
-                map.addControl(drawControlMarker);
+                // let drawControlMarker = new L.Control.Draw({
+                //     edit: {
+                //         featureGroup: drawnItemsMarker
+                //     },
+                //     draw: {
+                //         polygon: false,
+                //         polyline: false,
+                //         rectangle: false,
+                //         circle: false,
+                //         marker: false,
+                //         circlemarker: false
+                //     }
+                // });
+                // map.addControl(drawControlMarker);
 
-                map.on(L.Draw.Event.CREATED, function(event) {
-                    const layer = event.layer;
-                    if (event.layerType === 'polygon') {
-                        drawnItemsPolygon.addLayer(layer);
-                    } else if (event.layerType === 'marker') {
-                        drawnItemsMarker.addLayer(layer);
-                    }
-                });
+                // map.on(L.Draw.Event.CREATED, function(event) {
+                //     const layer = event.layer;
+                //     if (event.layerType === 'polygon') {
+                //         drawnItemsPolygon.addLayer(layer);
+                //     } else if (event.layerType === 'marker') {
+                //         drawnItemsMarker.addLayer(layer);
+                //     }
+                // });
 
                 document.getElementById('customParcelsNodesUpdateButton').addEventListener('click', function() {
                     updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker);

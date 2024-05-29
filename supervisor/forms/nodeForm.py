@@ -13,7 +13,7 @@ class NodeForm(forms.ModelForm):
         ('eui-a835411eb0084141', 'eui-a835411eb0084141'),
     ]
     reference = forms.ChoiceField(
-        choices=[('', 'Node reference')] + NODE_REFERENCE_CHOICES,
+        choices=[('', 'Select parcelle')] + NODE_REFERENCE_CHOICES,
         widget=forms.Select(attrs={
             'class': 'form-control form-control-sm', 
             'id': 'nodeReference', 
