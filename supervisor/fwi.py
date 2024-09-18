@@ -38,9 +38,10 @@ class FWI:
         fF = 91.9 * math.exp(-0.1386 * m) * (1.0 + pow(m, 5.31) / 49300000.0)
         return 0.208 * fWIND * fF
 
+
     def FWI(self, ISI):
-        # Pour simplifier, nous utiliserons une formule plus basique pour le FWI
-        return ISI * 0.1  # Ajuster ce coefficient selon les recommandations des experts
+        return ISI * 0.1  
+
 
     def calculate_wind(self, temp, humidity, pressure):
         wind_temp_factor = 0.1

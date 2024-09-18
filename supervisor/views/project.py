@@ -49,7 +49,7 @@ def add_project(request):
             project_name = project.name
             client_name = f"{project.client.firstName} {project.client.lastName}"
 
-            # Vérifiez si un projet avec le même nom et la même ville existe déjà
+            #! Vérifiez si un projet avec le même nom et la même ville existe déjà
             existing_project = Project.objects.filter(name=project_name, city=project.city).first()
 
             if existing_project:
@@ -118,41 +118,6 @@ def get_project_details(request, project_id):
         return JsonResponse(data)
     except Project.DoesNotExist:
         return JsonResponse({'error': 'Project not found'}, status=404)
-
-
-
-@login_required(login_url='supervisor_login')
-@supervisor_required
-def update_project(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    if request.method == 'POST':
-        form = ProjectForm(request.POST, request.FILES, instance=project)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Project updated successfully.')
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                project_data = {
-                    'pk': project.pk,
-                    'name': project.name,
-                    'description': project.description,
-                    'start_date': project.start_date,
-                    'end_date': project.end_date,
-                }
-                return JsonResponse({'success': True, 'project': project_data})
-            return redirect('supervisor:list_project')
-        else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'errors': form.errors})
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = ProjectForm(instance=project)
-
-    return render(request, 'website/project.html', {
-        'form': form,
-        'update': True,
-        'project': project,
-    })
-
 
 
 @login_required(login_url='supervisor_login')
@@ -341,6 +306,117 @@ def get_parcelles_with_nodes_for_project(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='supervisor_login')
+@supervisor_required
+def update_project(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Project updated successfully.')
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                project_data = {
+                    'pk': project.pk,
+                    'name': project.name,
+                    'description': project.description,
+                    'start_date': project.start_date,
+                    'end_date': project.end_date,
+                }
+                return JsonResponse({'success': True, 'project': project_data})
+            return redirect('supervisor:list_project')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors})
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ProjectForm(instance=project)
+
+    return render(request, 'website/project.html', {
+        'form': form,
+        'update': True,
+        'project': project,
+    })
+
+
+
+
+
+
+
+
+
+
 @login_required(login_url='supervisor_login')
 @supervisor_required
 def update_parcels_nodes(request):
@@ -354,17 +430,17 @@ def update_parcels_nodes(request):
 
         project = get_object_or_404(Project, pk=project_id)
 
-        # Supprimer les parcelles
+        #! Supprimer les parcelles
         for parcelle_id in deleted_polygons:
             parcelle = get_object_or_404(Parcelle, pk=parcelle_id, project=project)
             parcelle.delete()
 
-        # Supprimer les nœuds
+        #! Supprimer les nœuds
         for node_id in deleted_markers:
             node = get_object_or_404(Node, pk=node_id)
             node.delete()
 
-        # Mettre à jour les parcelles
+        #TODO Mettre à jour les parcelles
         for polygon_data in polygons:
             parcelle_id = polygon_data.get('id')
             coordinates = polygon_data.get('coordinates')
@@ -375,7 +451,7 @@ def update_parcels_nodes(request):
             else:
                 Parcelle.objects.create(project=project, polygon=Polygon(coordinates))
 
-        # Mettre à jour les nœuds
+        #TODO Mettre à jour les nœuds
         for marker_data in markers:
             node_id = marker_data.get('id')
             latitude = marker_data.get('latitude')

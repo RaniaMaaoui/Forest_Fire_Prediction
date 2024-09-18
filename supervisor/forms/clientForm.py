@@ -38,6 +38,9 @@ class ClientForm(forms.ModelForm):
 
         if not phone:
             raise forms.ValidationError("Phone number is required.")
+        
+        if not (isinstance(phone, int) and len(str(phone)) == 8):
+            self.add_error('phone', 'Phone number must be exactly 8 digits long.')
 
         if self.instance and self.instance.pk:
             if password or confirm_password:

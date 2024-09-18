@@ -10,7 +10,7 @@ class Client(models.Model):
     firstName   = models.CharField(max_length=25, blank=True)
     lastName    = models.CharField(max_length=25, blank=True)
     email       = models.EmailField(max_length=255, unique=True)
-    phone       = models.CharField(max_length=12, blank=True)
+    phone       = models.IntegerField(blank=True)
     username    = models.CharField(max_length=30)
     password    = models.CharField(max_length=128)
     image       = models.ImageField(null=True, blank=True, upload_to='img')

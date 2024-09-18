@@ -4,7 +4,7 @@ from .models.supervisor import Supervisor
 
 class SupervisorAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
-        try:
+        try:    
             obj.save()
         except ValidationError as e:
             form.add_error(None, e.message)

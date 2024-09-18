@@ -32,13 +32,13 @@ def add_client(request):
                 messages.success(request, 'Client added successfully.')
                 return redirect('supervisor:list_client')
             except ValidationError as e:
+                show_modal = True
                 form.add_error(None, e)
         else:
             show_modal = True
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ClientForm()
-
     clients = Client.objects.all()
     return render(request, 'website/clients/list_client.html', {'form': form, 'clients': clients, 'show_modal': show_modal})
 

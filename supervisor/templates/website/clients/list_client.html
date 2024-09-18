@@ -90,9 +90,6 @@
                                             <div class="form-group">
                                                 <label for="id_image">Select Image</label>
                                                 {{ form.image }}
-                                                {% if form.image.errors %}
-                                                    <div class="text-danger" id="error-image" role="alert">{{ form.image.errors }}</div>
-                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -261,7 +258,6 @@
             </div>
         </div>
         <!-- Footer End -->
-
     </div>
     <!-- Content End -->
 
@@ -278,6 +274,7 @@
                     content: content
                 });
             });
+
 
             document.getElementById('addProjectBtn').addEventListener('click', function () {
                 var myModal = new bootstrap.Modal(document.getElementById('addClientFormModal'), {

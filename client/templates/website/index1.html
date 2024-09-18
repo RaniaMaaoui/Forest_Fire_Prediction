@@ -7,28 +7,21 @@
             font-size: 12px;
             line-height: 1.4;
             text-align: left;
-            background-color: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-
         .node-popup b {
             font-weight: bold;
             color: #333;
         }
-
         .node-popup .highlight {
             color: blue;
         }
-
         .node-popup .node-label {
             display: inline-block;
-            color: white;
+            background-color: Blue;
+            color: black;
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 12px;
-            margin-bottom: 5px;
         }
     </style>
 {% endblock %}
@@ -92,7 +85,7 @@
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                                    <!-- <li><a class="dropdown-item" href="#">Profile</a></li> -->
                                     <li><a class="dropdown-item" data-bs-toggle="offcanvas" href="#offcanvasExample" aria-controls="offcanvasExample">Setting</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{% url 'logout_client' %}">Logout</a></li>

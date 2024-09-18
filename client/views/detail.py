@@ -13,14 +13,14 @@ import datetime
 def node_detail(request, project_id, node_id):
     project = get_object_or_404(Project, polygon_id=project_id, client=request.user.client)
     node = get_object_or_404(Node, id=node_id, parcelle__project=project)
-    
-    # Filtrer les données pour les dernières 24 heures
+
+    #* Filtrer les données pour les dernières 24 heures
     now = timezone.now()
     start_of_period = now - datetime.timedelta(days=1)
 
     data_entries = Data.objects.filter(node=node, published_date__range=(start_of_period, now))
-    
-    # Créer un dictionnaire pour stocker les valeurs de température, humidité et gaz par intervalles de 1 heure
+
+    #* Créer un dictionnaire pour stocker les valeurs de température, humidité et gaz par intervalles de 1 heure
     temperature_dict = {}
     humidity_dict = {}
     gas_dict = {}

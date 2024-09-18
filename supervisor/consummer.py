@@ -12,7 +12,8 @@ class MQTTConsumer(AsyncWebsocketConsumer):
         await self.accept()
         self.client = mqtt.Client()
         self.client.on_message = self.on_message
-        self.client.username_pw_set("fire-detction-app@ttn", "NNSXS.DVAOEHXTPMPFFOT57RT76FBXLIGB6YIAQRB6JEY.7CDXFNCQ4AYSGSMBQU6PE3LXRIHGCRYWS3UK4745OZZWL6NJBCLA")
+        # self.client.username_pw_set("fire-detection-test@ttn", "NNSXS.EDJB7U3WTZADJOA34ILAM7LZCKIS7NFRGU36G4Y.6C3Z3OKA7GK5K6SUVBCY5GQZGZOJDJIOWSTKQW4QNTNWAFI2RNBQ")
+        self.client.username_pw_set("lorae5app2@ttn", "NNSXS.7SPGHIMTGOGDQCROYRSD67YPZL4P5PZQ3MQJRCY.QBM3MPQHNDZWHOBTDDEUVQT2EBHP6ECICHBEWRZWWCGPMUY2FAKA")
         self.client.tls_set()
         self.client.connect("eu1.cloud.thethings.network", 8883, 60)
         self.client.subscribe("#", 2)
@@ -40,14 +41,13 @@ class MQTTConsumer(AsyncWebsocketConsumer):
 
     def on_message(self, client, userdata, message):
         parsed_json = json.loads(message.payload)
-        
+
         if 'uplink_message' in parsed_json and 'decoded_payload' in parsed_json['uplink_message']:
             decoded_payload = parsed_json["uplink_message"]["decoded_payload"]
             temperature     = decoded_payload.get("temperature", "N/A")
             humidity        = decoded_payload.get("humidity", "N/A")
             gaz             = decoded_payload.get("gaz", "N/A")
             pressure        = decoded_payload.get("pressur", "N/A")
-            detection       = decoded_payload.get("detection", "N/A")
             rssi            = parsed_json["uplink_message"]["rx_metadata"][0].get("rssi", "N/A")
             device_id       = parsed_json["end_device_ids"]["device_id"]
 
@@ -62,11 +62,11 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                             last_data = Data.objects.filter(node=node).latest('published_date')
                             ffmc_prev = last_data.ffmc if last_data else 85  # Utiliser une valeur par défaut si aucune donnée précédente
                         except Data.DoesNotExist:
-                            ffmc_prev = 85  # Utiliser une valeur par défaut si aucune donnée précédente
+                            ffmc_prev = 85  #* Utiliser une valeur par défaut si aucune donnée précédente
 
                         ffmc_value = fwi.FFMC(temperature, humidity, wind, 0, ffmc_prev)
                         isi_value = fwi.ISI(wind, ffmc_value)
-                        fwi_value = fwi.FWI(isi_value)  # Utiliser uniquement ISI pour le calcul de FWI
+                        fwi_value = fwi.FWI(isi_value)  #* Utiliser uniquement ISI pour le calcul de FWI
                         
                         node.FWI = fwi_value
                         node.save()
@@ -76,7 +76,6 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                             humidity=humidity,
                             pressur=pressure,
                             gaz=gaz,
-                            detection=detection,
                             wind=wind,
                             ffmc=ffmc_value,
                             isi=isi_value,
@@ -96,7 +95,6 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                     'humidity': humidity,
                     'gaz': gaz,
                     'pressure': pressure,
-                    'detection': detection,
                     'rssi': rssi,
                     'wind_speed': wind,
                     'fwi': fwi_value, 

@@ -3,9 +3,6 @@ from pathlib import Path
 from django.contrib.messages import constants as messages
 
 #* Définir les variables d'environnement GDAL
-GDAL_LIBRARY_PATH = r'C:\Users\moham\OneDrive\Bureau\fire_detection_web\.env\Lib\site-packages\osgeo\gdal304.dll'
-if GDAL_LIBRARY_PATH:
-    os.environ['GDAL_LIBRARY_PATH'] = GDAL_LIBRARY_PATH
 
 if os.name == 'nt':
     VENV_BASE = os.environ['VIRTUAL_ENV']

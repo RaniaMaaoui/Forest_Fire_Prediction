@@ -22,7 +22,7 @@
             </div>
             <!-- Add Project Button End -->
 
-            <!-- Project Form Modal Start (Initially Hidden) -->
+            <!--* Add Project Start -->
             <div class="modal" id="projectFormModal" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
@@ -94,9 +94,9 @@
                     </div>
                 </div>
             </div>
-            <!-- Project Form Modal End -->
+            <!--* Add Project End -->
 
-            <!-- Project List Start -->
+            <!--* Project List Start -->
             {% for project in projects_by_client %}
             <a href="?reload=true&client_id={{project.client_id}}">
                 <div class="alert {% cycle 'alert-primary' 'alert-secondary' 'alert-info' 'alert-success' 'alert-danger' 'alert-warning' 'alert-light' 'alert-dark' %} clickable-modal-launcher" >
@@ -108,11 +108,11 @@
                     <p>No Project found.</p>
                 </div>
             {% endfor %}
-            <!-- Project List End -->
+            <!--* Project List End -->
 
             <div id="list" role="alert" data-bs-toggle="modal" data-bs-target="#projectList" style="display: none;"></div>
 
-            <!-- Project Form Modal Start (Initially Hidden) -->
+            <!--* List Project Of Client Start -->
             <div class="modal" id="projectList" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px;">
@@ -137,7 +137,6 @@
                                                             data-project-client="{{ project.client }}">
                                                             <i class="fa fa-eye"></i>
                                                         </a>
-                                                        <a href="#" class="project-card-action btn btn-sm btn-warning" data-project-id="{{ project.pk }}"><i class="fa fa-edit"></i></a>
                                                         <a href="{% url 'supervisor:delete_project' project.pk %}" class="project-card-action btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this project?');"><i class="fa fa-trash"></i></a>
                                                         <a href="#" class="project-card-action btn btn-sm btn-info" id="showCustomParcelsNodesModal"
                                                             data-project-id="{{ project.pk }}" data-project-name="{{ project.name }}">
@@ -159,9 +158,9 @@
                     </div>
                 </div>
             </div>
-            <!-- Project Form Modal End -->
+            <!--* List Project Of Client End -->
 
-            <!-- Map Form Modal Start -->
+            <!--* Draw plots project Start -->
             <div class="modal" id="projectMapModal" tabindex="-1" aria-labelledby="projectFormModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 90%; max-height: 300%;">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: 300%;">
@@ -188,11 +187,6 @@
                                         <div class="form-group">
                                             <label for="name">Name:</label>
                                             {{ parcelle_form.name }}
-                                            {% if parcelle_form.name.errors %}
-                                                <div class="text-danger">
-                                                    {{ parcelle_form.name.errors }}
-                                                </div>
-                                            {% endif %}
                                         </div>
                                         <div class="form-group">
                                             <label for="project">Project:</label>
@@ -218,9 +212,9 @@
                     </div>
                 </div>
             </div>            
-            <!-- Map Form Modal End -->
+            <!--* Draw plots project End -->
 
-            <!-- Display Parcels Modal Start -->
+            <!--* ADD NODE TO YOUR PROJECT START -->
             <div class="modal" id="displayParcelsModal" tabindex="-1" aria-labelledby="displayParcelsModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 100%; max-height: none;">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: none;">
@@ -280,10 +274,10 @@
                     </div>
                 </div>
             </div>
-            <!-- Display Parcels Modal End -->
+            <!--* ADD NODE TO YOUR PROJECT End -->
 
 
-            <!-- Get Node Of Parcelle -->
+            <!--* LAST NODE ADDED OF PROJECT START -->
             <div class="modal" id="customDisplayParcelsModal" tabindex="-1" aria-labelledby="customDisplayParcelsModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 100%; max-height: none;">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: none;">
@@ -304,35 +298,31 @@
                     </div>
                 </div>
             </div>
-            <!-- Get Node Of Parcelle End -->
+            <!--* LAST NODE ADDED OF PROJECT START -->
 
 
-            <!-- CRUD Parcelle and Node -->
+            <!--* GET Parcelle and Node -->
             <div class="modal" id="customParcelsNodesModal" tabindex="-1" aria-labelledby="customParcelsNodesModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-xl" style="height: 100%; max-height: none;">
                     <div class="modal-content" style="border: 2px solid #32CD32; border-radius: 10px; height: 100%; max-height: none;">
                         <div class="modal-header">
-                            <h4 class="modal-title text-success fw-bold" id="customParcelsNodesModalLabel">UPDATE NODE AND PARCELLE OF PROJECT:</h4>
+                            <h4 class="modal-title text-success fw-bold" id="customParcelsNodesModalLabel">GET NODE AND PARCELLE OF PROJECT:</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeCustomParcelsNodesButton"></button>
                         </div>
                         <div class="modal-body">
                             <div class="content-map-node mb-3" style="height: 90%;">
                                 <div id="customParcelsNodesMap" style="width: 100%; height: 100%;"></div>
                             </div>
-                            <div class="text-center">
-                                <button type="button" class="btn btn-primary custom-gradient-button btn-lg" id="customParcelsNodesUpdateButton" style="padding: 2px 100px; border-radius: 20px; font-size: 25px;">Update</button>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- CRUD Parcelle and Node End -->
-
-
+            <!--* GET Parcelle and Node End -->
         </div>
     </div>
 
-    <!-- Footer Start -->
+    
+    <!--* Footer Start -->
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light rounded-top p-4">
             <div class="row">
@@ -349,7 +339,7 @@
 </div>
 <!-- Content End -->
 
-<!-- Project Detail Modal (Initially Hidden) -->
+<!--* Project Detail Modal (Initially Hidden) -->
 <div id="projectDetailModal" class="modal" tabindex="-1" aria-labelledby="projectDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-top-start" style="margin: auto; top: 0; left: 0;">
         <div class="modal-content">
@@ -471,19 +461,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 projectMapModal.show();
             });
         }
-
-    var editButtons = document.querySelectorAll('.project-card-action.btn.btn-sm.btn-warning');
-    editButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var projectId = btn.getAttribute('data-project-id');
-            console.log('Project ID:', projectId);
-        });
-    });
 });
 </script>
 
 
-<!--* Update polygon  -->
+<!--* Get polygon  -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const customParcelsNodesModal = new bootstrap.Modal(document.getElementById('customParcelsNodesModal'), {
@@ -500,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const projectName = this.getAttribute('data-project-name');
 
             const modalTitle = document.getElementById('customParcelsNodesModalLabel');
-            modalTitle.innerHTML = `UPDATE NODE AND PARCELLE OF PROJECT: <span style="color: black;">${projectName}</span>`;
+            modalTitle.innerHTML = `GET NODE AND PARCELLE OF PROJECT: <span style="color: black;">${projectName}</span>`;
             
             loadParcelsNodesMap(projectId);
             customParcelsNodesModal.show();
@@ -527,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const map = window.customMap = L.map(mapElement).setView([latitude, longitude], 15); // Center on project coordinates
 
-                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(map);
+                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {}).addTo(map);
 
                 fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                     .then(response => response.json())
@@ -541,9 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     opacity: 1,
                                     fillOpacity: 0.5
                                 }).bindPopup(
-                                    `<b>Parcelle ID:</b> ${parcelle.id}<br>
-                                     <button class="edit-polygon" data-id="${parcelle.id}">Edit</button>
-                                     <button class="delete-polygon" data-id="${parcelle.id}">Delete</button>`
+                                    `<b>Parcelle ID:</b> ${parcelle.id}<br>`
                                 );
                                 polygon.feature = { properties: { id: parcelle.id } };
                                 polygon.addTo(map);
@@ -552,9 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 parcelle.nodes.forEach(node => {
                                     const marker = L.marker([node.latitude, node.longitude]).bindPopup(
                                         `<b>Name:</b> ${node.name}<br>
-                                         <b>Ref:</b> ${node.ref}<br>
-                                         <button class="edit-marker" data-id="${node.id}">Edit</button>
-                                         <button class="delete-marker" data-id="${node.id}">Delete</button>`
+                                         <b>Ref:</b> ${node.ref}<br>`
                                     );
                                     marker.feature = { properties: { id: node.id } };
                                     marker.addTo(map);
@@ -565,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             console.log("No parcels found for this project.");
                         }
 
-                        addDrawControls(map);
+                        
                     })
                     .catch(error => console.error('Error fetching parcels:', error));
 
@@ -574,168 +552,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let drawnItemsMarker = new L.FeatureGroup();
                 map.addLayer(drawnItemsMarker);
-
-                function addDrawControls(map) {
-                    let drawControlPolygon = new L.Control.Draw({
-                        edit: {
-                            featureGroup: drawnItemsPolygon
-                        },
-                        draw: {
-                            polygon: true,
-                            polyline: false,
-                            rectangle: false,
-                            circle: false,
-                            marker: false,
-                            circlemarker: false
-                        }
-                    });
-                    map.addControl(drawControlPolygon);
-
-                    let drawControlMarker = new L.Control.Draw({
-                        edit: {
-                            featureGroup: drawnItemsMarker
-                        },
-                        draw: {
-                            polygon: false,
-                            polyline: false,
-                            rectangle: false,
-                            circle: false,
-                            marker: true,
-                            circlemarker: false
-                        }
-                    });
-                    map.addControl(drawControlMarker);
-
-                    map.on(L.Draw.Event.CREATED, function(event) {
-                        const layer = event.layer;
-                        if (event.layerType === 'polygon') {
-                            drawnItemsPolygon.addLayer(layer);
-                        } else if (event.layerType === 'marker') {
-                            drawnItemsMarker.addLayer(layer);
-                        }
-                    });
-
-                    map.on(L.Draw.Event.EDITED, function(event) {
-                        const layers = event.layers;
-                        layers.eachLayer(function(layer) {
-                            if (layer instanceof L.Polygon) {
-                                drawnItemsPolygon.addLayer(layer);
-                            } else if (layer instanceof L.Marker) {
-                                drawnItemsMarker.addLayer(layer);
-                            }
-                        });
-                    });
-
-                    map.on(L.Draw.Event.DELETED, function(event) {
-                        const layers = event.layers;
-                        layers.eachLayer(function(layer) {
-                            if (layer instanceof L.Polygon) {
-                                deletedPolygons.push(layer.feature.properties.id);
-                            } else if (layer instanceof L.Marker) {
-                                deletedMarkers.push(layer.feature.properties.id);
-                            }
-                        });
-                    });
-
-                    document.getElementById('customParcelsNodesUpdateButton').addEventListener('click', function() {
-                        updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker);
-                    });
-                }
-
-                document.addEventListener('click', function(event) {
-                    if (event.target.classList.contains('edit-polygon')) {
-                        const id = event.target.getAttribute('data-id');
-                        const polygonLayer = findLayerById(map, id, 'polygon');
-                        if (polygonLayer) {
-                            polygonLayer.editing.enable();
-                        }
-                    }
-                    if (event.target.classList.contains('delete-polygon')) {
-                        const id = event.target.getAttribute('data-id');
-                        const polygonLayer = findLayerById(map, id, 'polygon');
-                        if (polygonLayer) {
-                            deletedPolygons.push(id);
-                            map.removeLayer(polygonLayer);
-                        }
-                    }
-                    if (event.target.classList.contains('edit-marker')) {
-                        const id = event.target.getAttribute('data-id');
-                        const markerLayer = findLayerById(map, id, 'marker');
-                        if (markerLayer) {
-                            markerLayer.dragging.enable();
-                            markerLayer.on('dragend', function() {
-                                markerLayer.feature.properties.modified = true;
-                            });
-                        }
-                    }
-                    if (event.target.classList.contains('delete-marker')) {
-                        const id = event.target.getAttribute('data-id');
-                        const markerLayer = findLayerById(map, id, 'marker');
-                        if (markerLayer) {
-                            deletedMarkers.push(id);
-                            map.removeLayer(markerLayer);
-                        }
-                    }
-                });
             })
             .catch(error => console.error('Error fetching project details:', error));
     }
 
-    function updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker) {
-        const layersPolygon = drawnItemsPolygon.getLayers();
-        const layersMarker = drawnItemsMarker.getLayers();
-
-        const coordinatesPolygon = layersPolygon.map(layer => {
-            const id = layer.feature.properties.id;
-            const coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
-            return { id, coordinates };
-        });
-
-        const coordinatesMarker = layersMarker.map(layer => {
-            const id = layer.feature.properties ? layer.feature.properties.id : null;
-            const latlng = layer.getLatLng();
-            return { id, latitude: latlng.lat, longitude: latlng.lng, modified: layer.feature.properties.modified || false };
-        });
-
-        fetch('/dashboard_super/update_parcels_nodes/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify({
-                project_id: projectId,
-                polygons: coordinatesPolygon,
-                markers: coordinatesMarker,
-                deleted_polygons: deletedPolygons,
-                deleted_markers: deletedMarkers
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert('Parcels and nodes updated successfully.');
-                customParcelsNodesModal.hide();
-                window.location.href = '/dashboard_super/project_list/';
-            } else if (data.error) {
-                alert('Error updating parcels and nodes.');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function findLayerById(map, id, layerType) {
-        let layerFound = null;
-        map.eachLayer(function(layer) {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.id === parseInt(id, 10)) {
-                if ((layerType === 'polygon' && layer instanceof L.Polygon) || 
-                    (layerType === 'marker' && layer instanceof L.Marker)) {
-                    layerFound = layer;
-                }
-            }
-        });
-        return layerFound;
-    }
 });
 </script>
 {% endblock %}

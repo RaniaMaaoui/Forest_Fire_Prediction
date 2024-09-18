@@ -50,7 +50,8 @@ class ProjectForm(forms.ModelForm):
             }),
             'piece_joindre': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
-                'id': 'projectContract'
+                'id': 'projectContract',
+                'required': True,
             }),
             'date_debut': forms.DateTimeInput(attrs={
                 'class': 'form-control', 

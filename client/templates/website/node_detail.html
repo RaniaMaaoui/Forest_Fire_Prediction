@@ -199,7 +199,7 @@
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <!-- <li><a class="dropdown-item" href="#">Profile</a></li> -->
                         <li><a class="dropdown-item" data-bs-toggle="offcanvas" href="#offcanvasExample" aria-controls="offcanvasExample">Setting</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'logout_client' %}">Logout</a></li>
@@ -349,32 +349,30 @@
         document.getElementById('nodeRSSI').innerText       = nodeData.rssi || 'N/A';
         
         // Ajouter les valeurs de température, humidité, pression et gaz
-        document.getElementById('temperature').innerText    = nodeData.temperature || 'N/A';
-        document.getElementById('humidity').innerText       = nodeData.humidity || 'N/A';
+        document.getElementById('temperature').innerText    = nodeData.temperature  || 'N/A';
+        document.getElementById('humidity').innerText       = nodeData.humidity  || 'N/A';
         document.getElementById('pressure').innerText       = nodeData.pressure || 'N/A';
-        document.getElementById('wind').innerText           = nodeData.wind_speed || 'N/A';
-        document.getElementById('gas').innerText            = nodeData.gaz || 'N/A';
+        document.getElementById('wind').innerText           = nodeData.wind_speed  || 'N/A';
+        document.getElementById('gas').innerText            = nodeData.gaz  || 'N/A';
 
         const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            if (data.message === 'MQTT data received') {
-                const nodeData = data.data;
-                document.getElementById('nodeReference').innerText  = nodeData.device_id || 'N/A';
-                document.getElementById('nodeDutyCycle').innerText  = nodeData.duty_cycle || 'N/A';
-                document.getElementById('nodeRSSI').innerText       = nodeData.rssi || 'N/A';
-                
-                // Mettre à jour les valeurs de température, humidité, pression et gaz
-                document.getElementById('temperature').innerText    = nodeData.temperature || 'N/A';
-                document.getElementById('humidity').innerText       = nodeData.humidity || 'N/A';
-                document.getElementById('pressure').innerText       = nodeData.pressure || 'N/A';
-                document.getElementById('gas').innerText            = nodeData.gaz || 'N/A';
-                document.getElementById('wind').innerText           = nodeData.wind_speed || 'N/A';
+            const message = data.message;
+            const nodeData = data.data;
 
+            document.getElementById('nodeReference').innerText  = nodeData.device_id || 'N/A';
+            document.getElementById('nodeRSSI').innerText       = nodeData.rssi || 'N/A';
+            
+            // Mettre à jour les valeurs de température, humidité, pression et gaz
+            document.getElementById('temperature').innerText    = nodeData.temperature  || 'N/A';
+            document.getElementById('humidity').innerText       = nodeData.humidity  || 'N/A';
+            document.getElementById('pressure').innerText       = nodeData.pressure  || 'N/A';
+            document.getElementById('gas').innerText            = nodeData.gaz   || 'N/A';
+            document.getElementById('wind').innerText           = nodeData.wind_speed  || 'N/A';
 
-                saveNodeDataToLocalStorage(nodeData);
-            }
+            saveNodeDataToLocalStorage(nodeData);
         };
 
         socket.onopen = function(event) {

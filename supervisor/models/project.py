@@ -6,7 +6,6 @@ from .localisation                  import Localisation
 
 class Project(models.Model):
     name            = models.CharField(max_length=30)
-    geomp           = models.MultiPolygonField(null=True)
     descp           = models.TextField(null=True)
     date_debut      = models.DateTimeField(default=timezone.now)
     date_fin        = models.DateTimeField()
