@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from django.contrib.messages import constants as messages
 
 #* Définir les variables d'environnement GDAL
 
@@ -138,11 +137,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mohamedhedigharbi101@gmail.com'
 EMAIL_HOST_PASSWORD = 'pacesqcanahtmpks'
 
-#* Configuration des messages
-MESSAGE_TAGS = {
-    messages.DEBUG: 'debug',
-    messages.INFO: 'info',
-    messages.SUCCESS: 'success',
-    messages.WARNING: 'warning',
-    messages.ERROR: 'danger',
-}
+

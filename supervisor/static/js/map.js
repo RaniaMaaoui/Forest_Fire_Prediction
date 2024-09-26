@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {}).addTo(map);
+        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(map);
 
         map.on('moveend', function() {
             const mapState = {
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
 
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {}).addTo(displayMap);
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(displayMap);
 
             fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                 .then(response => response.json())
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     zoom: 15,
                 });
 
-                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {}).addTo(customDisplayMap);
+                L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(customDisplayMap);
 
                 fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                     .then(response => response.json())

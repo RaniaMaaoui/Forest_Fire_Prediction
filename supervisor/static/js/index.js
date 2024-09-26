@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 zoom: zoom,
             });
 
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {}).addTo(map);
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(map);
 
             map.on('moveend', function() {
                 const mapState = {

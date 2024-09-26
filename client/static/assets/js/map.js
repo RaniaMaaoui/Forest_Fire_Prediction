@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const map = L.map('map').setView([defaultLat, defaultLng], 15);
 
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=a1289e53-2a2d-4848-a6ca-53538acae488', {
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 17,
             }).addTo(map);
 
