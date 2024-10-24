@@ -10,7 +10,7 @@ daphne==4.1.2
 Django==4.2.11
 django-location-field==2.7.3
 django-mqtt==0.4.3
-GDAL==3.9.1
+GDAL==3.9.2
 hyperlink==21.0.0
 idna==3.7
 incremental==22.10.0
