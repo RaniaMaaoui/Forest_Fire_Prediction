@@ -12,6 +12,7 @@ class Data(models.Model):
     wind            = models.FloatField(default=0, null=True)
     rain            = models.FloatField(default=0, null=True)
     ffmc            = models.FloatField(null=True)
+    dmc             = models.FloatField(null=True)
     isi             = models.FloatField(null=True)
     fwi             = models.FloatField(null=True)
     published_date  = models.DateTimeField(blank=True, null=True)

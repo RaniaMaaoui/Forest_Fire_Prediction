@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+from celery.schedules import crontab
+
 
 #* Définir les variables d'environnement GDAL
 
@@ -8,6 +10,7 @@ if os.name == 'nt':
     os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo') + ';' + os.environ['PATH']
     os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\site-packages\\osgeo\\data\\proj')
 
+GDAL_LIBRARY_PATH = r'C:\Users\lenovo\Desktop\fire-detection-web\.env\Lib\site-packages\osgeo\gdal.dll'
 
 #* Construction des chemins à l'intérieur du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -61,7 +64,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,9 +93,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'fire_detection',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'db',
+        'USER': 'postgres',
+        'PASSWORD': '170320',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -124,7 +127,7 @@ STATIC_URL = '/static/'  # Assurez-vous que ce chemin est correct
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-MEDIA_URL = 'img/'
+MEDIA_URL = '/img/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'img/')
 
 #* Configuration de la clé primaire par défaut
@@ -137,5 +140,22 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mohamedhedigharbi101@gmail.com'
 EMAIL_HOST_PASSWORD = 'pacesqcanahtmpks'
+
+
+#CELERY CONFIGURATION
+# ---------------------------------------------------
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+
+CELERY_BEAT_SCHEDULE = {
+    'predict_fwi_every_5min': {
+        'task': 'supervisor.tasks.predict_fwi_for_data',
+        'schedule': crontab(minute='*/5'),  # Toutes les 5 minutes
+    },
+}
+
+
 
 

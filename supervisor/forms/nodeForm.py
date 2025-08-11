@@ -1,28 +1,21 @@
-from django                         import forms
-from supervisor.models.parcelle     import Parcelle
-from supervisor.models.node         import  Node
-from django.contrib.gis.geos        import Point
+from django import forms
+from supervisor.models.parcelle import Parcelle
+from supervisor.models.node import Node
+from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 
 
-
-
 class NodeForm(forms.ModelForm):
-    NODE_REFERENCE_CHOICES = [
-        ('eui-70b3d57ed0069f0e', 'eui-70b3d57ed0069f0e'),
-        ('eui-70b3d57ed00690fc', 'eui-70b3d57ed00690fc'),
-        ('eui-70b3d57ed0069a34', 'eui-70b3d57ed0069a34'),
-        ('eui-70b3d57ed0068f79', 'eui-70b3d57ed0068f79'),
-        ('eui-70b3d57ed00690fd', 'eui-70b3d57ed00690fd'),
-    ]
-    reference = forms.ChoiceField(
-        choices=[('', 'Select parcelle')] + NODE_REFERENCE_CHOICES,
-        widget=forms.Select(attrs={
-            'class': 'form-control form-control-sm', 
-            'id': 'nodeReference', 
+    reference = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-sm',
+            'id': 'nodeReference',
+            'placeholder': 'Enter EUI reference',
             'style': 'height: calc(1.5em + .75rem + 3px);'
         })
     )
+
     class Meta:
         model = Node
         fields = ['name', 'reference', 'sensors', 'node_range', 'latitude', 'longitude', 'position', 'parcelle']
@@ -41,7 +34,7 @@ class NodeForm(forms.ModelForm):
         position = cleaned_data.get('position')
         parcelle = cleaned_data.get('parcelle')
         parcelle_id = parcelle.id if parcelle else None
-        
+
         if position and parcelle_id:
             try:
                 parcelle = Parcelle.objects.get(id=parcelle_id)

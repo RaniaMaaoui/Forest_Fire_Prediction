@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Required elements are missing from the DOM.");
             return;
         }
-
+        
         const latitude = parseFloat(selectedMap.getAttribute('map-latitude'));
         const longitude = parseFloat(selectedMap.getAttribute('map-longitude'));
 
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(map);
+        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(map);
 
         map.on('moveend', function() {
             const mapState = {
@@ -86,11 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     map.setView([latitude, longitude], 15);
                 }
 
-                // Fetch and display parcels
+                //* Fetch and display parcels
                 fetchParcellesForProject(selectedOption.value);
             });
 
-            // Set initial modal title if a project is already selected
+            //! Set initial modal title if a project is already selected
             const initialProjectOption = projectSelect.options[projectSelect.selectedIndex];
             if (initialProjectOption) {
                 const projectName = initialProjectOption.textContent.trim();
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             drawnItemsPolygon.addLayer(layer);
         });
 
-        // Function to fetch and display parcels for the selected project
+        //TODO: Function to fetch and display parcels for the selected project
         function fetchParcellesForProject(projectId) {
             fetch(`/dashboard_super/get_parcelles_for_project/?project_id=${projectId}`)
                 .then(response => {
@@ -229,14 +229,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Load parcels with nodes on the display map
+
+
+        //! Load parcels with nodes on the display map
         function loadParcelsOnDisplayMap(projectId) {
             const displayMap = L.map("displayMap", {
                 center: [latitude, longitude],
                 zoom: 15,
             });
 
-            L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(displayMap);
+
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(displayMap);
 
             fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                 .then(response => response.json())
@@ -404,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (!nodeReference.value) {
                         showAlert('Reference is required.', 'referenceAlert');
-                        errorMessage += `"reference": [{"message": "Reference is required.", "code": "required"}], `;
+                        errorMessage += `"reference": [{"message": "ID Parcelle is required.", "code": "required"}], `;
                         isValid = false;
                     } else {
                         hideAlert('referenceAlert');
@@ -479,13 +482,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
+
+
+
+
+
             function loadParcelsOnCustomDisplayMap(projectId) {
                 const customDisplayMap = L.map("customDisplayMap", {
                     center: [latitude, longitude],
                     zoom: 15,
                 });
 
-                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(customDisplayMap);
+                L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(customDisplayMap);
 
                 fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                     .then(response => response.json())
@@ -502,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const marker = L.marker([node.latitude, node.longitude]);
                                     marker.bindPopup(
                                         `<b>Name:</b> ${node.name}<br>
-                                         <b>Ref:</b> ${node.ref}`
+                                         <b>ID Parcelle:</b> ${node.ref}`
                                     );
                                     marker.addTo(customDisplayMap);
                                 });

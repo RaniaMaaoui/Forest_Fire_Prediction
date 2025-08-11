@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const map = window.customMap = L.map(mapElement).setView([latitude, longitude], 15); // Center on project coordinates
 
-                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=804a57a3-dbf8-4d82-a63f-b6cac9e41dc2', {}).addTo(map);
+                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg?api_key=1f18db9b-4249-4473-87c0-eb280f40f55c', {}).addTo(map);
 
                 fetch(`/dashboard_super/get_parcelles_with_nodes_for_project/?project_id=${projectId}`)
                     .then(response => response.json())
@@ -71,45 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let drawnItemsMarker = new L.FeatureGroup();
                 map.addLayer(drawnItemsMarker);
-
-                let drawControlPolygon = new L.Control.Draw({
-                    edit: {
-                        featureGroup: drawnItemsPolygon
-                    },
-                    draw: {
-                        polygon: true,
-                        polyline: false,
-                        rectangle: false,
-                        circle: false,
-                        marker: false,
-                        circlemarker: false
-                    }
-                });
-                map.addControl(drawControlPolygon);
-
-                let drawControlMarker = new L.Control.Draw({
-                    edit: {
-                        featureGroup: drawnItemsMarker
-                    },
-                    draw: {
-                        polygon: false,
-                        polyline: false,
-                        rectangle: false,
-                        circle: false,
-                        marker: true,
-                        circlemarker: false
-                    }
-                });
-                map.addControl(drawControlMarker);
-
-                map.on(L.Draw.Event.CREATED, function(event) {
-                    const layer = event.layer;
-                    if (event.layerType === 'polygon') {
-                        drawnItemsPolygon.addLayer(layer);
-                    } else if (event.layerType === 'marker') {
-                        drawnItemsMarker.addLayer(layer);
-                    }
-                });
 
                 document.getElementById('customParcelsNodesUpdateButton').addEventListener('click', function() {
                     updateParcelsNodes(projectId, drawnItemsPolygon, drawnItemsMarker);

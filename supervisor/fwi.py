@@ -1,7 +1,23 @@
 import math
 
 class FWI:
+    def safe_float(self, value, default=0.0):
+        """Safely convert value to float, handle None, 'N/A', and invalid values"""
+        if value is None or value == "N/A" or value == "":
+            return default
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return default
+    
     def FFMC(self, TEMP, RH, WIND, RAIN, FFMCPrev):
+        # Convert inputs to safe float values
+        TEMP = self.safe_float(TEMP, 20.0)
+        RH = self.safe_float(RH, 50.0) 
+        WIND = self.safe_float(WIND, 0.0)
+        RAIN = self.safe_float(RAIN, 0.0)
+        FFMCPrev = self.safe_float(FFMCPrev, 85.0)
+        
         RH = min(100.0, RH)
         mo = 147.2 * (101.0 - FFMCPrev) / (59.5 + FFMCPrev)
 
@@ -33,17 +49,26 @@ class FWI:
         return 59.5 * (250.0 - m) / (147.2 + m)
 
     def ISI(self, WIND, FFMC):
+        # Convert inputs to safe float values
+        WIND = self.safe_float(WIND, 0.0)
+        FFMC = self.safe_float(FFMC, 85.0)
+        
         fWIND = math.exp(0.05039 * WIND)
         m = 147.2 * (101.0 - FFMC) / (59.5 + FFMC)
         fF = 91.9 * math.exp(-0.1386 * m) * (1.0 + pow(m, 5.31) / 49300000.0)
         return 0.208 * fWIND * fF
-
-
+       
     def FWI(self, ISI):
-        return ISI * 0.1  
-
-
+        # Convert input to safe float value
+        ISI = self.safe_float(ISI, 0.0)
+        return ISI * 0.1
+        
     def calculate_wind(self, temp, humidity, pressure):
+        # Convert inputs to safe float values with appropriate defaults
+        temp = self.safe_float(temp, 20.0)
+        humidity = self.safe_float(humidity, 50.0)
+        pressure = self.safe_float(pressure, 1013.25)
+        
         wind_temp_factor = 0.1
         wind_humidity_factor = 0.07
         wind_pressure_factor = 0.05
@@ -54,3 +79,30 @@ class FWI:
 
         estimated_wind_speed = wind_from_temp + wind_from_humidity + wind_from_pressure
         return round(max(0, estimated_wind_speed), 2)
+         
+    def DMC(self, TEMP, RH, RAIN, dmc_prev):
+        # Convert inputs to safe float values
+        TEMP = self.safe_float(TEMP, 20.0)
+        RH = self.safe_float(RH, 50.0)
+        RAIN = self.safe_float(RAIN, 0.0)
+        dmc_prev = self.safe_float(dmc_prev, 6.0)
+        
+        if RAIN > 1.5:
+            Pr = RAIN
+        else:
+            Pr = 0.0
+
+        if Pr > 0.0:
+            Re = 0.92 * Pr - 1.27
+            Mr = dmc_prev + 100.0 * Re
+            if Mr < 0.0:
+              Mr = 0.0
+        else:
+             Mr = dmc_prev
+
+        rk = 1.894 * (TEMP + 1.1) * (100.0 - RH) * 0.0001
+        dmc = Mr + rk
+
+        # Limiter la valeur entre 0 et 300 comme recommandé
+        dmc = max(0, min(dmc, 300))
+        return round(dmc, 2)
