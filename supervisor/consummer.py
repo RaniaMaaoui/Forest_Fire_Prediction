@@ -13,7 +13,6 @@ class MQTTConsumer(AsyncWebsocketConsumer):
         await self.accept()
         self.client = mqtt.Client()
         self.client.on_message = self.on_message
-        # self.client.username_pw_set("fire-detection-test@ttn", "NNSXS.EDJB7U3WTZADJOA34ILAM7LZCKIS7NFRGU36G4Y.6C3Z3OKA7GK5K6SUVBCY5GQZGZOJDJIOWSTKQW4QNTNWAFI2RNBQ")
         self.client.username_pw_set("lorae5app2@ttn", "NNSXS.7SPGHIMTGOGDQCROYRSD67YPZL4P5PZQ3MQJRCY.QBM3MPQHNDZWHOBTDDEUVQT2EBHP6ECICHBEWRZWWCGPMUY2FAKA")
         self.client.tls_set()
         self.client.connect("eu1.cloud.thethings.network", 8883, 60)
@@ -55,6 +54,11 @@ class MQTTConsumer(AsyncWebsocketConsumer):
 
             fwi = FWI() #fwi_biblio
             wind = fwi.calculate_wind(temperature, humidity, pressure)
+            
+            # Initialize variables with default values
+            fwi_value = 0  # Traditional calculated FWI
+            fwi_predit_value = 0  # ML predicted FWI
+            dmc_value = 0
 
             try:
                 nodes = Node.objects.filter(reference=device_id)
@@ -68,13 +72,13 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                             ffmc_prev = 85
                             dmc_prev = 6  # Default DMC value
 
-                        # Calculate FFMC, DMC, ISI but NOT FWI
+                        # Calculate FFMC, DMC, ISI and traditional FWI
                         ffmc_value = fwi.FFMC(temperature, humidity, wind, rain, ffmc_prev)
                         dmc_value = fwi.DMC(temperature, humidity, rain, dmc_prev)
                         isi_value = fwi.ISI(wind, ffmc_value)
-                        # ELIMINATED: fwi_value = fwi.FWI(isi_value)  # No traditional FWI calculation
+                        fwi_value = fwi.FWI(isi_value)  # Traditional calculated FWI
                         
-                        # Save data with calculated values but FWI will come from prediction
+                        # Save data with traditional calculated FWI
                         data = Data(
                             temperature=temperature,
                             humidity=humidity,
@@ -84,7 +88,8 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                             ffmc=ffmc_value,
                             dmc=dmc_value,
                             isi=isi_value,
-                            fwi=0,  # Will be updated by ML prediction
+                            fwi=fwi_value,  # Traditional calculated FWI
+                            fwi_predit=0,  # Will be updated by ML prediction
                             published_date=timezone.now(),
                             node=node
                         )
@@ -94,26 +99,22 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                         try:
                             predict_single_fwi.delay(data.idData)
                             print(f"ML prediction task launched for data ID: {data.idData}")
-                            
-                            # Use the last predicted FWI from previous predictions
-                            try:
-                                last_prediction = Data.objects.filter(
-                                    node=node, 
-                                    fwi__gt=0  # Only get records where FWI was predicted
-                                ).latest('published_date')
-                                fwi_value = last_prediction.fwi
-                            except Data.DoesNotExist:
-                                fwi_value = 0  # No prediction available yet
-                            
-                            # Update node with predicted FWI
-                            node.FWI = fwi_value
-                            node.save()
-                            
                         except Exception as prediction_error:
                             print(f"Error launching prediction task: {prediction_error}")
-                            fwi_value = 0  # No prediction available
-                            node.FWI = 0
-                            node.save()
+                            
+                        # Get the last ML predicted FWI from previous records (for display)
+                        try:
+                            last_prediction = Data.objects.filter(
+                                node=node, 
+                                fwi_predit__gt=0  # Only get records where ML prediction exists
+                            ).latest('published_date')
+                            fwi_predit_value = last_prediction.fwi_predit
+                        except Data.DoesNotExist:
+                            fwi_predit_value = 0  # No ML prediction available yet
+                            
+                        # Update node with traditional calculated FWI
+                        node.FWI = fwi_value  # Traditional FWI visible on the node
+                        node.save()
                             
                     print("Data saved successfully for all nodes")
                 else:
@@ -121,7 +122,8 @@ class MQTTConsumer(AsyncWebsocketConsumer):
             except Exception as e:
                 print(f"Error saving data: {e}")
                 # Set fallback values in case of error
-                fwi_value = 0
+                fwi_value = 0  # Traditional FWI fallback
+                fwi_predit_value = 0  # ML predicted FWI fallback
                 dmc_value = 0
             finally:
                 async_to_sync(self.send_message_to_websocket)({
@@ -131,8 +133,9 @@ class MQTTConsumer(AsyncWebsocketConsumer):
                     'pressure': pressure,
                     'rssi': rssi,
                     'wind_speed': wind,
-                    'fwi': fwi_value,  # This will now be the predicted FWI only
-                    'dmc': dmc_value,  # DMC is still calculated
+                    'fwi': fwi_value,  # Traditional calculated FWI
+                    'fwi_predit': fwi_predit_value,  # ML predicted FWI
+                    'dmc': dmc_value,
                     'device_id': device_id
                 })
         else:
@@ -143,6 +146,8 @@ class MQTTConsumer(AsyncWebsocketConsumer):
             'message': 'MQTT data received',
             'data': data
         }))
+
+
 """import json
 import paho.mqtt.client as mqtt
 from channels.generic.websocket import AsyncWebsocketConsumer

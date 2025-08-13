@@ -90,7 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <b>ID Parcelle:</b> ${node.ref}<br>
                                 <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                                 <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                                <b>Prediction result:</b><span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
+                                <b>FWI prédit:</b> ${nodeData.fwi_predit || 'N/A'}<br>
+                                <b>Prediction result:</b>
+                                <span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">
+                                    ${getPredictionMessage(nodeData.fwi || 0)}
+                                </span><br><br>
                                 <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                                 <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                                 <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
@@ -127,7 +131,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <b>ID Parcelle:</b> ${nodeData.device_id}<br>
                                     <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                                     <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                                    <b>Prediction result:</b><span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
+                                    <b>FWI prédit:</b> ${nodeData.fwi_predit || 'N/A'}<br>
+                                    <b>Prediction result:</b>
+                                    <span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">
+                                        ${getPredictionMessage(nodeData.fwi || 0)}
+                                    </span><br><br>
                                     <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                                     <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                                     <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
@@ -176,7 +184,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             <b>ID Parcelle:</b> ${ref}<br>
                             <b>RSSI:</b> ${nodeData.rssi || 'N/A'}<br>
                             <b>FWI:</b> ${nodeData.fwi || 'N/A'}<br>
-                            <b>Prediction result:</b> <span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">${getPredictionMessage(nodeData.fwi || 0)}</span><br><br>
+                            <b>FWI prédit:</b> ${nodeData.fwi_predit || 'N/A'}<br>
+                            <b>Prediction result:</b>
+                            <span style="color: ${getColor(nodeData.fwi || 0)}; font-weight: bold;">
+                                ${getPredictionMessage(nodeData.fwi || 0)}
+                            </span><br><br>
                             <b>Temperature:</b> ${nodeData.temperature || 'N/A'} °C<br>
                             <b>Humidity:</b> ${nodeData.humidity || 'N/A'} %<br>
                             <b>Pressure:</b> ${nodeData.pressure || 'N/A'} hPa<br>
@@ -189,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         const popup = tempMarker.getPopup().getElement();
                         popup.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 200);  // Délai pour s'assurer que le popup est bien ouvert
+                    }, 200);
                 });
             });
 

@@ -6,7 +6,6 @@ import os
 import json
 from json import JSONEncoder
 
-# Custom JSON Encoder pour gérer les types numpy
 class NumpyEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -17,7 +16,6 @@ class NumpyEncoder(JSONEncoder):
             return obj.tolist()
         return super().default(obj)
 
-# Singleton pour charger le modèle et le scaler une seule fois
 class MLModel:
     _instance = None
     _model = None
@@ -49,7 +47,6 @@ def predict_single_fwi(self, data_id):
 
         data = Data.objects.get(idData=data_id)
 
-        # Liste ordonnée des features
         features = [
             float(data.temperature),
             float(data.humidity),
@@ -60,23 +57,24 @@ def predict_single_fwi(self, data_id):
             float(data.isi),
         ]
 
-        # Standardisation
         features_scaled = scaler.transform([features])
 
-        # Prédiction
         prediction = float(model.predict(features_scaled)[0])
-        data.fwi = prediction
+
+        data.fwi_predit = prediction  # stocker dans fwi_predit
         data.save()
 
-        # Résultat renvoyé
         result = {
             "status": "predicted",
-            "fwi": prediction
+            "fwi_predit": prediction
         }
         return json.dumps(result, cls=NumpyEncoder)
 
     except Exception as e:
         raise self.retry(exc=e, countdown=10)
+
+
+
 
 '''from celery import shared_task
 from supervisor.models.data import Data

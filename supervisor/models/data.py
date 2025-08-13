@@ -1,6 +1,6 @@
-from django.contrib.gis.db  import models
+from django.contrib.gis.db import models
 from supervisor.models.node import Node
-from django.utils           import timezone
+from django.utils import timezone
 
 class Data(models.Model):  
     idData          = models.AutoField(primary_key=True)  
@@ -14,7 +14,8 @@ class Data(models.Model):
     ffmc            = models.FloatField(null=True)
     dmc             = models.FloatField(null=True)
     isi             = models.FloatField(null=True)
-    fwi             = models.FloatField(null=True)
+    fwi             = models.FloatField(null=True)        # FWI traditionnel
+    fwi_predit      = models.FloatField(null=True)        # FWI ML prédit
     published_date  = models.DateTimeField(blank=True, null=True)
     node            = models.ForeignKey(Node, on_delete=models.CASCADE, null=True, related_name='datas')
 
@@ -25,4 +26,7 @@ class Data(models.Model):
     def __str__(self):
         return (f'node : {self.node}, Temperature: {self.temperature}, Humidity: {self.humidity}, '
                 f'Pressur: {self.pressur}, Gaz: {self.gaz}, Wind: {self.wind}, Rain: {self.rain}, '
-                f'Date: {self.published_date}')
+                f'FWI: {self.fwi}, FWI_Predit: {self.fwi_predit}, Date: {self.published_date}')
+
+
+
