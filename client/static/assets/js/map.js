@@ -116,12 +116,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("No parcels found for this project.");
             }
 
-            const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
+            const socket = new WebSocket("ws://127.0.0.1:8000/ws/data/");
 
             socket.onmessage = function(event) {
+                console.log("📩 Message brut reçu du WS :", event.data);
                 const data = JSON.parse(event.data);
+                console.log("📦 Après JSON.parse :", data);
+                
                 if (data.message === 'MQTT data received') {
-                    const nodeData = data.data;
+                    console.log("✅ C'est bien un message MQTT");
+                    console.log("🔎 Données envoyées :", data);
+                    
+                    const nodeData = data.data;  // ⚠️ Ici on prend bien le champ `data`
                     const nodeMarkers = markers[nodeData.device_id];
                     if (nodeMarkers) {
                         nodeMarkers.forEach(marker => {
@@ -155,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             polygon.setStyle({ fillColor: color });
                         }
                     }
+                } else {
+                    console.warn("⚠️ Message ignoré :", data);
                 }
             };
 
@@ -197,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     const tempMarker = L.marker([lat, lng]).addTo(map).bindPopup(popupContent).openPopup();
-                    map.setView([lat, lng], 18);  // Ajuster le niveau de zoom
+                    map.setView([lat, lng], 18);  
                     setTimeout(() => {
                         const popup = tempMarker.getPopup().getElement();
                         popup.scrollIntoView({ behavior: 'smooth', block: 'center' });

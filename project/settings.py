@@ -84,7 +84,8 @@ ASGI_APPLICATION = 'project.asgi.application'
 #* Configuration de Channels
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("localhost", 6379)]},
     },
 }
 
@@ -155,6 +156,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*/5'),  # Toutes les 5 minutes
     },
 }
+
 
 
 
