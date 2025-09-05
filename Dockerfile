@@ -1,64 +1,43 @@
-# Utiliser l'image Python officielle
-FROM python:3.12-slim
+# Base Python
+FROM python:3.9-slim
 
-# Définir les variables d'environnement
+# Variables d'environnement
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
+ENV IN_DOCKER=1
 
-# Définir le répertoire de travail dans le conteneur
+# Variables pour GDAL
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
+ENV GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so.36
+
+# Répertoire de travail
 WORKDIR /app
 
-# Installer les dépendances de compilation pour GDAL et outils de configuration
-RUN apt-get update && \
-    apt-get install -y \
+# Installer dépendances système
+RUN apt-get update && apt-get install -y \
     build-essential \
-    ca-certificates \
-    curl \
-    g++ \
-    gcc \
-    cmake \
-    autoconf \
-    automake \
-    libtool \
+    gdal-bin \
+    libgdal-dev \
     libproj-dev \
-    libtiff-dev \
-    libgeos-dev \
-    libjson-c-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libsqlite3-dev \
-    libcurl4-gnutls-dev \
-    python3-dev \
-    python3-pip \
-    wget \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    gcc \
+    g++ \
+    git \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/lib/x86_64-linux-gnu/libgdal.so.36 /usr/lib/libgdal.so
 
-# Télécharger et compiler GDAL 3.9.2 avec CMake
-RUN curl -O http://download.osgeo.org/gdal/3.9.2/gdal-3.9.2.tar.gz && \
-    tar -xvzf gdal-3.9.2.tar.gz && \
-    cd gdal-3.9.2 && \
-    cmake . && \
-    make && \
-    make install && \
-    ldconfig
+# Copier requirements et installer
+COPY requirements_linux.txt ./
+RUN pip install --upgrade pip
+RUN pip install -r requirements_linux.txt
 
-# Définir les variables d'environnement pour GDAL
-ENV CPLUS_INCLUDE_PATH=/usr/local/include/gdal
-ENV C_INCLUDE_PATH=/usr/local/include/gdal
+# Copier le projet
+COPY . .
 
-# Copier le fichier requirements.txt dans le conteneur
-COPY requirements.txt /app/
-
-# Installer les dépendances Python, y compris les bindings GDAL
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Copier le reste du code de l'application dans le conteneur
-COPY . /app/
-
-# Exposer le port sur lequel l'application Django sera lancée
+# Exposer le port pour Django
 EXPOSE 8000
 
-# Commande pour lancer l'application Django
-CMD ["python", "start_daphne.py"]
+# Commande par défaut pour Channels + Daphne
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "project.asgi:application"]

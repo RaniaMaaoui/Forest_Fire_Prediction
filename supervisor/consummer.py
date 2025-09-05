@@ -1,3 +1,4 @@
+import os
 import json
 import paho.mqtt.client as mqtt
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -5,8 +6,8 @@ from supervisor.tasks.calcul_fwi import calculate_fwi_task
 
 TTN_HOST = "eu1.cloud.thethings.network"
 TTN_PORT = 8883
-TTN_USER = "lorae5app2@ttn"   
-TTN_PASS = "NNSXS.7SPGHIMTGOGDQCROYRSD67YPZL4P5PZQ3MQJRCY.QBM3MPQHNDZWHOBTDDEUVQT2EBHP6ECICHBEWRZWWCGPMUY2FAKA"  # ton mot de passe TTN
+TTN_USER = os.environ.get("TTN_USER","lorae5app2@ttn")   
+TTN_PASS = os.environ.get("TTN_PASS","NNSXS.7SPGHIMTGOGDQCROYRSD67YPZL4P5PZQ3MQJRCY.QBM3MPQHNDZWHOBTDDEUVQT2EBHP6ECICHBEWRZWWCGPMUY2FAKA")  # ton mot de passe TTN
 
 class MQTTConsumer(AsyncWebsocketConsumer):
     async def connect(self):

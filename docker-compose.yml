@@ -1,54 +1,53 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgis/postgis:16-3.4
-    container_name: db
-    environment:
-      POSTGRES_DB: fire_detection
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
-
-  dashboard:
+  web:
     build: .
-    container_name: dashboard
-    volumes:
-      - .:/app
+    container_name: fire_web
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+    env_file:
+      - config.env   
     environment:
-      - DEBUG=True
-      - DATABASE_URL=postgres://root:root@db:5432/fire_detection
-      - HOST=0.0.0.0
-    networks:
-      - app-network
+      - IN_DOCKER=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - .:/app
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com  # Set your desired admin email
-      PGADMIN_DEFAULT_PASSWORD: admin           # Set your desired admin password
-    ports:
-      - "8080:80"  # Access pgAdmin at localhost:8080
+  celery:
+    build: .
+    container_name: fire_celery
     depends_on:
-      - db
-    networks:
-      - app-network
-    logging:
-      driver: "none"
+      - web
+      - redis
+    env_file:
+      - config.env
+    command: celery -A project worker --pool=solo -l info
+    volumes:
+      - .:/app
 
-networks:
-  app-network:
-    driver: bridge
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: fire_db
+    env_file:
+      - config.env
+    environment:
+      POSTGRES_DB: fire_detection
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - fire_db_data:/var/lib/postgresql/data  # <-- persistance
+
+  redis:
+    image: redis:7
+    container_name: fire_redis
+    ports:
+      - "6379:6379"
 
 volumes:
-  pgdata:
+  fire_db_data:
