@@ -206,7 +206,9 @@ elif IN_DOCKER:
 # ---------------------------------------------
 SECRET_KEY = 'django-insecure-o0$9+icstx@*4vthy_ufg^o0&q-5p-ydqf9oh_idqvn9xd3@wd'
 DEBUG = True
-ALLOWED_HOSTS = ['51.68.81.225']
+ALLOWED_HOSTS = ['51.68.81.225',
+                 'localhost',
+                '127.0.0.1']
 
 # ---------------------------------------------
 # Applications installées
