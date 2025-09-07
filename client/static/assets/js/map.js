@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // --- WebSocket temps réel ---
-            const socket = new WebSocket("ws://127.0.0.1:8000/ws/data/");
+            const socket = new WebSocket("ws://51.68.81.225:8000/ws/data/");
 
             socket.onmessage = function(event) {
                 const wsData = JSON.parse(event.data);
