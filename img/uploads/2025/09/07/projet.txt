@@ -1,1 +1,0 @@
-contract smart for green
