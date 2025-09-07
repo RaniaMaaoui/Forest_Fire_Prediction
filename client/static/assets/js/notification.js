@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/mqtt/");
+    const socket = new WebSocket("ws://51.68.81.225:8000/ws/mqtt/");
 
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
