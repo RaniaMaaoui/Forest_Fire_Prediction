@@ -17,6 +17,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - .:/app
+    restart: always   # <-- ajout
 
   celery:
     build: .
@@ -29,6 +30,7 @@ services:
     command: celery -A project worker --pool=solo -l info
     volumes:
       - .:/app
+    restart: always   # <-- ajout
 
   db:
     image: postgis/postgis:15-3.4
@@ -41,13 +43,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - fire_db_data:/var/lib/postgresql/data  # <-- persistance
+      - fire_db_data:/var/lib/postgresql/data
+    restart: always   # <-- ajout
 
   redis:
     image: redis:7
     container_name: fire_redis
     ports:
       - "6379:6379"
+    restart: always   # <-- ajout
 
 volumes:
   fire_db_data:
